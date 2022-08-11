@@ -1,9 +1,6 @@
 //
 //  ContentView.swift
 //  AutoDB
-//
-//  Created by Emmanuel Flores on 8/11/22.
-//
 
 import SwiftUI
 import CoreData
