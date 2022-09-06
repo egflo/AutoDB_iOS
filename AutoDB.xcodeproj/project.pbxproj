@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 55;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,14 @@
 		B512DEF828A5ABCD00864190 /* AutoDBTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B512DEF728A5ABCD00864190 /* AutoDBTests.swift */; };
 		B512DF0228A5ABCD00864190 /* AutoDBUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B512DF0128A5ABCD00864190 /* AutoDBUITests.swift */; };
 		B512DF0428A5ABCD00864190 /* AutoDBUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B512DF0328A5ABCD00864190 /* AutoDBUITestsLaunchTests.swift */; };
+		B512DF1128A5C33500864190 /* AutoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B512DF1028A5C33500864190 /* AutoView.swift */; };
+		B512DF1328A5CE4900864190 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B512DF1228A5CE4900864190 /* NetworkManager.swift */; };
+		B512DF1628A5CE9C00864190 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B512DF1528A5CE9C00864190 /* Alamofire */; };
+		B512DF1928A5D5B400864190 /* Auth0 in Frameworks */ = {isa = PBXBuildFile; productRef = B512DF1828A5D5B400864190 /* Auth0 */; };
+		B512DF1D28A5DF3100864190 /* decode.swift in Sources */ = {isa = PBXBuildFile; fileRef = B512DF1C28A5DF3100864190 /* decode.swift */; };
+		B52CDE9E28C5A48D00D867B2 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B52CDE9D28C5A48D00D867B2 /* SDWebImageSwiftUI */; };
+		B52CDEA028C669EF00D867B2 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52CDE9F28C669EF00D867B2 /* SearchView.swift */; };
+		B52CDEA228C6F60800D867B2 /* AutoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B52CDEA128C6F60800D867B2 /* AutoCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +57,11 @@
 		B512DEFD28A5ABCD00864190 /* AutoDBUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AutoDBUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B512DF0128A5ABCD00864190 /* AutoDBUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDBUITests.swift; sourceTree = "<group>"; };
 		B512DF0328A5ABCD00864190 /* AutoDBUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoDBUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		B512DF1028A5C33500864190 /* AutoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoView.swift; sourceTree = "<group>"; };
+		B512DF1228A5CE4900864190 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		B512DF1C28A5DF3100864190 /* decode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = decode.swift; sourceTree = "<group>"; };
+		B52CDE9F28C669EF00D867B2 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
+		B52CDEA128C6F60800D867B2 /* AutoCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +69,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B52CDE9E28C5A48D00D867B2 /* SDWebImageSwiftUI in Frameworks */,
+				B512DF1628A5CE9C00864190 /* Alamofire in Frameworks */,
+				B512DF1928A5D5B400864190 /* Auth0 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -106,6 +122,11 @@
 				B512DEEB28A5ABCD00864190 /* AutoDB.entitlements */,
 				B512DEE428A5ABCC00864190 /* AutoDB.xcdatamodeld */,
 				B512DEEC28A5ABCD00864190 /* Preview Content */,
+				B512DF1028A5C33500864190 /* AutoView.swift */,
+				B512DF1228A5CE4900864190 /* NetworkManager.swift */,
+				B512DF1C28A5DF3100864190 /* decode.swift */,
+				B52CDE9F28C669EF00D867B2 /* SearchView.swift */,
+				B52CDEA128C6F60800D867B2 /* AutoCard.swift */,
 			);
 			path = AutoDB;
 			sourceTree = "<group>";
@@ -151,6 +172,11 @@
 			dependencies = (
 			);
 			name = AutoDB;
+			packageProductDependencies = (
+				B512DF1528A5CE9C00864190 /* Alamofire */,
+				B512DF1828A5D5B400864190 /* Auth0 */,
+				B52CDE9D28C5A48D00D867B2 /* SDWebImageSwiftUI */,
+			);
 			productName = AutoDB;
 			productReference = B512DEDD28A5ABCC00864190 /* AutoDB.app */;
 			productType = "com.apple.product-type.application";
@@ -215,7 +241,7 @@
 				};
 			};
 			buildConfigurationList = B512DED828A5ABCC00864190 /* Build configuration list for PBXProject "AutoDB" */;
-			compatibilityVersion = "Xcode 14.0";
+			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -223,6 +249,11 @@
 				Base,
 			);
 			mainGroup = B512DED428A5ABCC00864190;
+			packageReferences = (
+				B512DF1428A5CE9C00864190 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				B512DF1728A5D5B400864190 /* XCRemoteSwiftPackageReference "Auth0" */,
+				B52CDE9C28C5A48D00D867B2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+			);
 			productRefGroup = B512DEDE28A5ABCC00864190 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -265,8 +296,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B512DF1D28A5DF3100864190 /* decode.swift in Sources */,
+				B512DF1328A5CE4900864190 /* NetworkManager.swift in Sources */,
 				B512DEE128A5ABCC00864190 /* AutoDBApp.swift in Sources */,
+				B52CDEA228C6F60800D867B2 /* AutoCard.swift in Sources */,
 				B512DEE328A5ABCC00864190 /* Persistence.swift in Sources */,
+				B52CDEA028C669EF00D867B2 /* SearchView.swift in Sources */,
+				B512DF1128A5C33500864190 /* AutoView.swift in Sources */,
 				B512DEE828A5ABCC00864190 /* ContentView.swift in Sources */,
 				B512DEE628A5ABCC00864190 /* AutoDB.xcdatamodeld in Sources */,
 			);
@@ -417,6 +453,7 @@
 		B512DF0828A5ABCD00864190 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AutoDB/AutoDB.entitlements;
@@ -427,34 +464,39 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.egflo.AutoDB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,3,4";
+				TVOS_DEPLOYMENT_TARGET = 15.4;
 			};
 			name = Debug;
 		};
 		B512DF0928A5ABCD00864190 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AutoDB/AutoDB.entitlements;
@@ -465,28 +507,32 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.entertainment";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = "";
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MACOSX_DEPLOYMENT_TARGET = 12.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.egflo.AutoDB;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTED_PLATFORMS = "watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,3,4";
+				TVOS_DEPLOYMENT_TARGET = 15.4;
 			};
 			name = Release;
 		};
@@ -620,6 +666,51 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B512DF1428A5CE9C00864190 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		B512DF1728A5D5B400864190 /* XCRemoteSwiftPackageReference "Auth0" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/auth0/Auth0.swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+		B52CDE9C28C5A48D00D867B2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B512DF1528A5CE9C00864190 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B512DF1428A5CE9C00864190 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		B512DF1828A5D5B400864190 /* Auth0 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B512DF1728A5D5B400864190 /* XCRemoteSwiftPackageReference "Auth0" */;
+			productName = Auth0;
+		};
+		B52CDE9D28C5A48D00D867B2 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B52CDE9C28C5A48D00D867B2 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		B512DEE428A5ABCC00864190 /* AutoDB.xcdatamodeld */ = {
