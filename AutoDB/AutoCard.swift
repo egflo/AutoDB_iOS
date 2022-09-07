@@ -53,15 +53,32 @@ struct AutoCard: View {
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                Text(formatPrice(price: auto.price))
-                    .bold()
-                    .font(.subheadline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.bottom, 4)
-                    .foregroundColor(.black)
                 
-                
-                
+                HStack {
+                    
+                    Text(formatPrice(price: auto.price))
+                        .bold()
+                        .font(.subheadline)
+                        .foregroundColor(.black)
+                    
+                    
+                    if let dealer = auto.dealer {
+                        HStack {
+                            Image(systemName: "location.fill")
+                            Text("\(dealer.city) \(dealer.postcode)")
+                                .font(.subheadline)
+                                .foregroundColor(.gray)
+                        }
+                        //.padding(.top,1)
+                        //.padding(.bottom,1)
+                    }
+
+                    
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 4)
+
+
                 HStack {
                     Spacer()
 

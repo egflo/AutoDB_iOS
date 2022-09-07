@@ -135,19 +135,38 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
         return false
     }
     
-    func fetch(path: String) {
+    func fetch(path: String, params: [URLQueryItem]) {
+        
+        
+        var current = params
+        current.append(URLQueryItem(name: "limit", value: String(pageSize)))
+        current.append(URLQueryItem(name: "page", value: String(currentPage)))
+
+        
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "http"
+        urlComponents.host = "10.81.1.123"
+        urlComponents.port = 8080
+        urlComponents.path = "/auto/search/\(path)"
+        urlComponents.queryItems = current
+        
+        
         guard canLoadMorePages else {
             return
         }
         
         isLoadingPage = true
         
-        let url = "http://10.81.1.123:8080/auto/search/bmw?limit=\(pageSize)&page=\(currentPage)"
-        print(url)
+        //let url = "http://10.81.1.123:8080/auto/search/bmw?limit=\(pageSize)&page=\(currentPage)"
+        //print(url)
         
         
-        let encoded_url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
+        //let encoded_url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
+        let encoded_url = urlComponents.url?.absoluteString
+        //print(encoded_url!)
+
+        
         var request = URLRequest(url: URL(string: encoded_url!)!)
         request.httpMethod = "GET"
         //request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
