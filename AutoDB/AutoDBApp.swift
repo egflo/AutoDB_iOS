@@ -2,7 +2,7 @@
 //  AutoDBApp.swift
 //  AutoDB
 //
-//  Created by Emmanuel Flores on 8/11/22.
+//  Created by Emmanuel Flores on 6/11/22.
 //
 
 import SwiftUI
@@ -13,7 +13,7 @@ struct AutoDBApp: App {
 
     var body: some Scene {
         WindowGroup {
-            SearchView()
+            ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

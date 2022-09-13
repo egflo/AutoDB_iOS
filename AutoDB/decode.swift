@@ -12,6 +12,71 @@
 
 import Foundation
 
+@MainActor
+class Meta: ObservableObject {
+    @Published var query = "/auto/search/all"
+    @Published var isAuthenticated = false
+    @Published var user: User?
+}
+
+
+import JWTDecode
+
+
+// MARK: - User
+
+struct User {
+    let id: String
+    let name: String
+    let email: String
+    let emailVerified: String
+    let picture: String
+    let updatedAt: String
+}
+
+extension User {
+    init?(from idToken: String) {
+        guard let jwt = try? decode(jwt: idToken),
+              let id = jwt.subject,
+              let name = jwt["name"].string,
+              let email = jwt["email"].string,
+              let emailVerified = jwt["email_verified"].boolean,
+              let picture = jwt["picture"].string,
+              let updatedAt = jwt["updated_at"].string else {
+            return nil
+        }
+        self.id = id
+        self.name = name
+        self.email = email
+        self.emailVerified = String(describing: emailVerified)
+        self.picture = picture
+        self.updatedAt = updatedAt
+    }
+}
+
+// MARK: - Bookmark
+
+struct Bookmark: Codable, Identifiable, Equatable {
+    let id: Int
+    let userId: Int
+    let autoId: Int
+    let created: String
+    let auto: Auto?
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func ==(lhs: Bookmark, rhs: Bookmark) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
+    static func < (lhs: Bookmark, rhs: Bookmark) -> Bool {
+        return lhs.id < rhs.id
+    }
+}
+
+
 
 // MARK: - Auto
 struct Auto: Codable, Equatable, Hashable, Identifiable, Comparable {

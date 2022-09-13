@@ -138,6 +138,8 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
     func fetch(path: String, params: [URLQueryItem]) {
         
         
+        print(path)
+        
         var current = params
         current.append(URLQueryItem(name: "limit", value: String(pageSize)))
         current.append(URLQueryItem(name: "page", value: String(currentPage)))
@@ -147,7 +149,7 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
         urlComponents.scheme = "http"
         urlComponents.host = "10.81.1.123"
         urlComponents.port = 8080
-        urlComponents.path = "/auto/search/\(path)"
+        urlComponents.path = "\(path)"
         urlComponents.queryItems = current
         
         
@@ -164,7 +166,7 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
         //let encoded_url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
         let encoded_url = urlComponents.url?.absoluteString
-        //print(encoded_url!)
+        print(encoded_url!)
 
         
         var request = URLRequest(url: URL(string: encoded_url!)!)

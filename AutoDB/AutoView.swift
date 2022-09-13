@@ -26,7 +26,7 @@ struct Collapsible<Content: View>: View {
                     
                     VStack {
                         
-                        Divider()
+                        //Divider()
                         
                         HStack {
                             self.label()
@@ -40,24 +40,24 @@ struct Collapsible<Content: View>: View {
                         
                         Divider()
                     }
-                    .padding(.bottom, 1)
                     .background(.gray.opacity(0.01))
                 }
             )
+            .padding()
             .buttonStyle(PlainButtonStyle())
             
             VStack {
                 self.content()
-            }
+            }.border(.green)
 
             .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: collapsed ? 0 : .none)
             .clipped()
-            .animation(.easeOut)
-            .transition(.slide)
+            //.animation(.easeOut)
+           // .transition(.slide)
 
         }
-        .padding(.leading, 10)
-        .padding(.trailing,10)
+        //.padding(.leading, 10)
+        //.padding(.trailing,10)
     }
 }
 
@@ -245,6 +245,10 @@ struct AutoView: View {
         GridItem(.adaptive(minimum: 200, maximum: 270))
     ]
     
+    @State var columnsText = [
+        GridItem(.adaptive(minimum: 100, maximum: 200))
+    ]
+    
     var body: some View {
         
         ScrollView {
@@ -330,8 +334,9 @@ struct AutoView: View {
 
                     
                 }
-
                 
+                VStack {
+
                 Collapsible(
                     label: {
                         Text("Seller Description")
@@ -347,8 +352,7 @@ struct AutoView: View {
                     }
                 )
                 .frame(maxWidth: .infinity)
-                
-                
+                                
                 Collapsible(
                     label: {
                         Text("Features")
@@ -366,12 +370,233 @@ struct AutoView: View {
                 )
                 .frame(maxWidth: .infinity)
                 
+                
+                Collapsible(
+                    label: {
+                        Text("Mechanical")
+                        
+                    },
+                    content: {
+                        LazyVGrid(columns: columnsText, spacing: 20)  {
+                            
+                            VStack {
+                                Text("Cylinders")
+                                    .bold()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                
+                                Text("\(auto.engine.cylinders)")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+                            
+                            VStack {
+                                Text("Displacement")
+                                    .bold()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                Text("\(auto.engine.displacement)")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+
+                            VStack {
+                                Text("Horsepower")
+                                    .bold()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Text(auto.engine.horsepower)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+                                     
+                             VStack {
+                                Text("Power")
+                                     .bold()
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+                                Text(auto.engine.power)
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+                             }
+                                     
+                             VStack {
+                                Text("Torque")
+                                     .bold()
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                Text(auto.engine.torque)
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+                                 
+                            }
+
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                    }
+                )
+                .frame(maxWidth: .infinity)
+                
+                
+                
+                if let dealer = auto.dealer {
+                    
+                    Collapsible(
+                        label: {
+                            Text("Dealer")
+                            
+                        },
+                        content: {
+                            LazyVGrid(columns: columnsText, spacing: 20)  {
+                                
+                                VStack {
+                                    Text("Name")
+                                        .bold()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                                    
+                                    Text("\(dealer.name)")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                                }
+                                
+                                VStack {
+                                    Text("Rating")
+                                        .bold()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                    Text("\(dealer.rating)")
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                                }
+
+                                VStack {
+                                    Text("City")
+                                        .bold()
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                                    Text(dealer.city)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                                }
+                                         
+                                 VStack {
+                                    Text("Postcode")
+                                         .bold()
+                                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                                    Text(dealer.postcode)
+                                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                                 }
+                                         
+                                 VStack {
+                                    Text("Franchise Dealer")
+                                         .bold()
+                                         .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                     Text(formatBool(bool: dealer.franchiseDealer))
+                                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                                     
+                                }
+
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                        }
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                
+                
+                Collapsible(
+                    label: {
+                        Text("Report")
+                        
+                    },
+                    content: {
+                        LazyVGrid(columns: columnsText, spacing: 20)  {
+                            
+                            VStack {
+                                Text("VIN")
+                                    .bold()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                                
+                                Text("\(auto.report.vin)")
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+                            
+                            VStack {
+                                Text("Frame Damage")
+                                    .bold()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                Text(formatBool(bool: auto.report.frameDamage))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+
+                            VStack {
+                                Text("Accidents")
+                                    .bold()
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                Text(formatBool(bool: auto.report.hasAccidents))
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                            }
+                                     
+                             VStack {
+                                 Text("Theft Title")
+                                     .bold()
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                 Text(formatBool(bool: auto.report.theftTitle))
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+                             }
+                                     
+                             VStack {
+                                 Text("Salvage")
+                                     .bold()
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+
+                                 Text(formatBool(bool: auto.report.salvage))
+                                     .frame(maxWidth: .infinity, alignment: .leading)
+
+                                 
+                            }
+
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                    }
+                )
+                .frame(maxWidth: .infinity)
+                    
+                }
+                .padding(.leading, 10)
+                .padding(.trailing, 10)
+                
             }
             else {
                 ProgressView()
             }
             
         }
+        .navigationBarTitle("Listing", displayMode: .inline)
 
         
         .onAppear(perform: {
@@ -387,6 +612,16 @@ struct AutoView: View {
         let value = formatter.string(from: price as NSNumber)
         
         return value!
+    }
+    
+    func formatBool(bool: Bool) -> String {
+        
+        if bool {
+            return "Yes"
+        }
+        
+        return "No"
+        
     }
     
     func getAuto() {
