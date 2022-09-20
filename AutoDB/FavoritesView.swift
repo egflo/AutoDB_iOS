@@ -9,19 +9,6 @@ import SwiftUI
 import Auth0
 
 
-struct CustomButton: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding()
-            .padding(.trailing,15)
-            .padding(.leading,15)
-            .background(.blue)
-            .foregroundColor(.white)
-            .clipShape(RoundedRectangle(cornerRadius: 5))
-            .scaleEffect(configuration.isPressed ? 1.2 : 1)
-            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
-    }
-}
 
 struct FavoritesView: View {
     @Binding var selectTab: Int
@@ -33,14 +20,17 @@ struct FavoritesView: View {
     ]
     
     @State var user: User?
+    
+    
     @StateObject private var dataSource = ContentDataSource<Bookmark>()
+    let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
 
     
     var body: some View {
         
         VStack {
-            if meta.isAuthenticated {
-                
+            
+            if credentialsManager.hasValid() {
                     
                     ScrollView {
                         
@@ -51,14 +41,14 @@ struct FavoritesView: View {
                                     AutoView(auto: bookmark.auto!)
                                     
                                 } label: {
-                                    AutoCard(auto: bookmark.auto!)
+                                    AutoCard(auto: bookmark.auto!, selected: true)
                                         .frame(width: 300, height: 320, alignment: .top)
 
                                     
                                     .onAppear(perform: {
                                         if !self.dataSource.endOfList {
                                             if self.dataSource.shouldLoadMore(item: bookmark) {
-                                                self.dataSource.fetch(path: "/bookmark/all", params: [])
+                                                self.dataSource.fetch(path: "/bookmark/all", params: [], auth: true)
 
                                             }
                                         }
@@ -79,7 +69,7 @@ struct FavoritesView: View {
    
                     .onAppear {
                         
-                        self.dataSource.fetch(path: "/bookmark/all", params: [])
+                        self.dataSource.fetch(path: "/bookmark/all", params: [], auth: true)
 
                     }
                 
@@ -109,11 +99,11 @@ extension FavoritesView {
     func login() {
         Auth0
             .webAuth()
+            .audience("https://carvo/api")
             .start { result in
                 switch result {
                 case .success(let credentials):
                     self.user = User(from: credentials.idToken)
-                    self.meta.isAuthenticated = true
                     
                     let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
                     let isCredentialsStored = credentialsManager.store(credentials: credentials)

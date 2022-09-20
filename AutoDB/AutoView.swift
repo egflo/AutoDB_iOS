@@ -2,124 +2,11 @@
 //  AutoView.swift
 //  AutoDB
 //
-//  Created by Emmanuel Flores on 8/11/22.
 //
 
 import SwiftUI
 import ImageIO
 import SDWebImageSwiftUI
-
-
-
-
-struct Collapsible<Content: View>: View {
-    @State var label: () -> Text
-    @State var content: () -> Content
-    
-    @State private var collapsed: Bool = true
-    
-    var body: some View {
-        VStack {
-            Button(
-                action: { self.collapsed.toggle() },
-                label: {
-                    
-                    VStack {
-                        
-                        //Divider()
-                        
-                        HStack {
-                            self.label()
-                                .bold()
-                            Spacer()
-                            Image(systemName: self.collapsed ? "chevron.down" : "chevron.up")
-                                .foregroundColor(.blue)
-                            
-
-                        }
-                        
-                        Divider()
-                    }
-                    .background(.gray.opacity(0.01))
-                }
-            )
-            .padding()
-            .buttonStyle(PlainButtonStyle())
-            
-            VStack {
-                self.content()
-            }.border(.green)
-
-            .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: collapsed ? 0 : .none)
-            .clipped()
-            //.animation(.easeOut)
-           // .transition(.slide)
-
-        }
-        //.padding(.leading, 10)
-        //.padding(.trailing,10)
-    }
-}
-
-
-
-struct ImageSlider: View {
-    // 1
-    @State var auto: Auto
-    
-    var body: some View {
-        // 2
-        VStack {
-            if auto.images.isEmpty {
-                Image(systemName: "livephoto.slash")
-                    .resizable()
-                    .frame(width: 25, height: 25)
-            }
-            
-            else {
-                TabView {
-                    ForEach(processImages(auto: auto), id: \.id) { item in
-                         //3
-                        WebImage(url: URL(string: item.url))
-                        // Supports options and context, like `.delayPlaceholder` to show placeholder only when error
-                        .onSuccess { image, data, cacheType in
-                            // Success
-                            // Note: Data exist only when queried from disk cache or network. Use `.queryMemoryData` if you really need data
-                        }
-                        .resizable() // Resizable like SwiftUI.Image, you must use this modifier or the view will use the image bitmap size
-                        .placeholder(Image(systemName: "livephoto.slash")) // Placeholder Image
-                        // Supports ViewBuilder as well
-                        .placeholder {
-                            Rectangle().foregroundColor(.white)
-                        }
-                        .indicator(.activity) // Activity Indicator
-                        .transition(.fade(duration: 0.5)) // Fade Transition with duration
-                        .scaledToFit()
-                    }
-                }
-                .tabViewStyle(PageTabViewStyle())            }
-        }
-        
-
-    }
-    
-    func processImages(auto: Auto) -> [AutoImage] {
-        
-        print(auto.id)
-        print(auto.images.count)
-        
-        if auto.images.count < 2 {
-            
-            return []
-        }
-        
-        else {
-            return auto.images.sorted{$0.url < $1.url}
-        }
-        
-    }
-}
-
 
 
 struct DealerRow: View {
@@ -277,9 +164,6 @@ struct AutoView: View {
                                             .shadow(color: .black, radius: 1)
                                     )
                             }
-
-                            
-                            
 
                             
                             Spacer()
