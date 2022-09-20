@@ -2,7 +2,6 @@
 //  HomeView.swift
 //  AutoDB
 //
-//  Created by Emmanuel Flores on 9/11/22.
 //
 
 import SwiftUI

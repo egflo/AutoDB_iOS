@@ -1,26 +1,21 @@
 //
-//  decode.swift
+//  Decode.swift
 //  AutoDB
 //
 //
 
-
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let welcome = try? newJSONDecoder().decode(Welcome.self, from: jsonData)
-
 import Foundation
+import JWTDecode
+
 
 @MainActor
 class Meta: ObservableObject {
-    @Published var query = "/auto/search/all"
+    @Published var query = "all"
+    @Published var params = [URLQueryItem]()
+    
     @Published var isAuthenticated = false
     @Published var user: User?
 }
-
-
-import JWTDecode
 
 
 // MARK: - User
@@ -56,9 +51,30 @@ extension User {
 
 // MARK: - Bookmark
 
+
+
+struct BookmarkWithAuto: Codable, Equatable {
+    let auto: Auto
+    let bookmark: Bookmark
+    
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(bookmark.id)
+    }
+    
+    static func ==(lhs: BookmarkWithAuto, rhs: BookmarkWithAuto) -> Bool {
+        return lhs.bookmark.id == rhs.bookmark.id
+    }
+    
+    static func < (lhs: BookmarkWithAuto, rhs: BookmarkWithAuto) -> Bool {
+        return lhs.bookmark.id < rhs.bookmark.id
+    }
+    
+}
+
 struct Bookmark: Codable, Identifiable, Equatable {
     let id: Int
-    let userId: Int
+    let userId: String
     let autoId: Int
     let created: String
     let auto: Auto?
@@ -202,10 +218,15 @@ struct Engine: Codable {
 }
 
 // MARK: - Image
-struct AutoImage: Codable {
+struct AutoImage: Codable, Hashable {
     let id, autoID: Int
     let url: String
 
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
     enum CodingKeys: String, CodingKey {
         case id
         case autoID = "autoId"
