@@ -2,7 +2,6 @@
 //  HomeView.swift
 //  AutoDB Test
 //
-//
 
 import SwiftUI
 import Auth0
