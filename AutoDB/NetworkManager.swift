@@ -7,7 +7,7 @@
 import Foundation
 import Alamofire
 import Combine
-
+import Auth0
 
 
 enum NetworkError: Error {
@@ -106,11 +106,12 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
     private var currentPage = 0
     private let pageSize = 25
     
+    
+    var auth: Bool
     var cancellable: Set<AnyCancellable> = Set()
 
-
-    init() {
-
+    init(auth: Bool = false) {
+        self.auth = auth
     }
     
     func reset() {
@@ -135,16 +136,12 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
         return false
     }
     
-    func fetch(path: String, params: [URLQueryItem]) {
-        
-        
-        print(path)
+    func fetch(path: String, params: [URLQueryItem], auth: Bool = false) {
         
         var current = params
         current.append(URLQueryItem(name: "limit", value: String(pageSize)))
         current.append(URLQueryItem(name: "page", value: String(currentPage)))
 
-        
         var urlComponents = URLComponents()
         urlComponents.scheme = "http"
         urlComponents.host = "10.81.1.123"
@@ -158,20 +155,38 @@ class ContentDataSource<T: Codable & Equatable>: ObservableObject {
         }
         
         isLoadingPage = true
-        
-        //let url = "http://10.81.1.123:8080/auto/search/bmw?limit=\(pageSize)&page=\(currentPage)"
-        //print(url)
-        
-        
-        //let encoded_url = url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
 
         let encoded_url = urlComponents.url?.absoluteString
         print(encoded_url!)
-
         
         var request = URLRequest(url: URL(string: encoded_url!)!)
         request.httpMethod = "GET"
-        //request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+
+
+        
+        var token = ""
+        if auth {
+            let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
+            
+            credentialsManager.credentials { result in
+                switch result {
+                case .success(let credentials):
+                    print("Obtained credentials: \(credentials)")
+                    
+                    let token = credentials.accessToken
+                    print(token)
+                    
+                    request.setValue("Bearer \(credentials.accessToken)", forHTTPHeaderField: "Authorization")
+                    request.setValue("Bearer \(credentials.accessToken)", forHTTPHeaderField: "Authorization")
+
+                case .failure(let error):
+                    print("Failed with: \(error)")
+                }
+            }
+        
+        }
+        
+
 
         URLSession.shared.dataTaskPublisher(for: request)
             .map { $0.data }

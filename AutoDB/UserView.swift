@@ -2,8 +2,6 @@
 //  UserView.swift
 //  AutoDB
 //
-//
-
 import SwiftUI
 import Auth0
 
@@ -47,7 +45,8 @@ struct ProfileCell: View {
             #endif
         }
     //#if os(iOS)
-     //   .listRowBackground(.white)
+        //.listRowBackground(.red)
+
     //#endif
     }
 }
@@ -58,26 +57,13 @@ struct UserView: View {
     @Binding var selectTab: Int
     @State var user: User?
 
-    
+    let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
+
     var body: some View {
         
         VStack {
             
-            if !meta.isAuthenticated {
-                
-                VStack {
-                    Text("Login to save and view your favorites.")
-                    
-                    Button("Login") {
-                        print("Button pressed!")
-                        login()
-                    }
-                    .buttonStyle(CustomButton())
-                }
-            }
-            
-            else {
-                
+            if credentialsManager.hasValid() {
                 VStack {
                     
                     if let user = self.user {
@@ -90,8 +76,16 @@ struct UserView: View {
                                 ProfileCell(key: "Email verified?", value: user.emailVerified)
                                 ProfileCell(key: "Updated at", value: user.updatedAt)
                             }
+                            //.backgroundStyle(.gray)
+                            
+    
+                                
+                            Button("Logout") {
+                                logout()
+                            }
+                            .buttonStyle(CustomButton())
+      
                         }
-                        
                     }
                     
                     else {
@@ -100,6 +94,21 @@ struct UserView: View {
                     
                     }
                 }
+                
+            }
+            
+            else {
+                
+                VStack {
+                    Text("Login to save and view your profile.")
+                    
+                    Button("Login") {
+                        login()
+                    }
+                    .buttonStyle(CustomButton())
+                }
+
+
             }
             
         }
@@ -115,30 +124,20 @@ extension UserView {
     func getUser() {
         let credentialsManager = CredentialsManager(authentication: Auth0.authentication())
 
-        guard credentialsManager.canRenew() else {
+        guard credentialsManager.hasValid() else {
             // No renewable credentials exist, present the login page
-            return login()
+            //return login()
+            
+            return
         }
-        // Retrieve the stored credentials
         
+        // Retrieve the stored credentials
+    
         credentialsManager.credentials { result in
             switch result {
             case .success(let credentials):
                 print("Obtained credentials: \(credentials)")
-                
-                Auth0
-                    .authentication()
-                    .userInfo(withAccessToken: credentials.accessToken)
-                    .start { result in
-                        switch result {
-                        case .success(let user):
-                            print("Obtained user: \(user)")
-                            
-                            
-                        case .failure(let error):
-                            print("Failed with: \(error)")
-                        }
-                    }
+                self.user = User(from: credentials.idToken)
                 
             case .failure(let error):
                 print("Failed with: \(error)")
@@ -150,7 +149,7 @@ extension UserView {
     func login() {
         Auth0
             .webAuth()
-        
+            .audience("https://carvo/api")
             .start { result in
                 switch result {
                 case .success(let credentials):
@@ -182,6 +181,8 @@ extension UserView {
                             print("Failed with: \(error)")
                         }
                     }
+                    
+                    meta.isAuthenticated = true
 
                     
                 case .failure(let error):
@@ -190,7 +191,6 @@ extension UserView {
                 
             }
         
-
     }
 
     func logout() {
@@ -207,9 +207,3 @@ extension UserView {
     }
 }
 
-
-//struct UserView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        UserView()
-//    }
-//}

@@ -13,10 +13,17 @@ import Alamofire
 
 class SearchObject: ObservableObject {
     @Published var modals = [String: [CheckModel]]()
+    @Published var components: [String:String]
+    @Published var updated = false
+    
+    init(query: String = "all") {
+        self.modals = [String: [CheckModel]]()
+        self.updated = false
+        self.components = [String:String]()
+    }
     
     
     func getKey(key: String) -> [CheckModel] {
-        
         let keyExists = self.modals[key] != nil
         if keyExists {
             return self.modals[key]!
@@ -27,26 +34,110 @@ class SearchObject: ObservableObject {
         }
     }
     
-    func toggle(key: String, id: Int) {
+    
+    func toggle(key: String, id: Int) -> Bool{
         
-        var lst = getKey(key: key)
-        var v =  modals[key]!.first(where: {$0.id == id})
-
-        //v.isSelected.toggle()
+        let keyExists = self.modals[key] != nil
+        if keyExists {
+            var index = self.modals[key]!.firstIndex(where: {$0.id == id})
+            
+            if var unwrapped = index {
+                self.modals[key]![unwrapped].isSelected.toggle()
+                
+                return true
+                
+            } else {
+                return false
+            }
+            
+        }
         
+        else {
+            return false
+        }
+    }
+    
+    func resetKey(key: String) {
+        
+        let keyExists = self.modals[key] != nil
+        if keyExists {
+            for (index, _) in self.modals[key]!.enumerated() {
+                self.modals[key]![index].isSelected = false
+            }
+        }
+        
+        else {
+            return
+        }
     }
 }
 
 
+struct CheckModel: Codable, Identifiable, Hashable, Equatable {
+    var id: Int
+    var type: String
+    var description: String
+    var isSelected: Bool
+}
 
-struct SearchRow: View {
-    @ObservedObject var search: SearchObject
+
+struct CheckCellView: View {
+    @Binding var cell: CheckModel
     
     var body: some View {
         
+        HStack {
+            Image(systemName: cell.isSelected ? "checkmark.square" : "square")
+                .foregroundColor(.blue)
+                .onTapGesture {
+                    cell.isSelected.toggle()
+                }
+                
+            Text(cell.description)
+        }.frame(maxWidth:.infinity, alignment: .leading)
+        
+    }
+    
+}
+
+struct CheckRow: View {
+    @EnvironmentObject var search: SearchObject
+    
+    var label: String
+    @Binding var cells: [CheckModel]
+    @Binding var updated: Bool
+        
+    var body: some View {
+        
         VStack {
+            List(search.modals[label.lowercased()] ?? [], id: \.id) {cell in
+                
+                HStack {
+                    Image(systemName: cell.isSelected ? "checkmark.square" : "square")
+                        .foregroundColor(.blue)
+                        .onTapGesture {
+                            search.toggle(key: label.lowercased(), id: cell.id)
+                            search.updated.toggle()
+                        }
+                        
+                    Text(cell.description)
+                }.frame(maxWidth:.infinity, alignment: .leading)
+            }
             
-            
+        }
+        .navigationTitle(label)
+    }
+    
+}
+
+
+struct SearchRow: View {
+    @EnvironmentObject var search: SearchObject
+
+    var body: some View {
+        
+        VStack {
+
             ScrollView(.horizontal, showsIndicators: false) {
                 
                 HStack {
@@ -91,9 +182,6 @@ struct SearchRow: View {
             .padding(.trailing,2)
             
         }
-        
-        
-
 
     }
     
@@ -104,108 +192,13 @@ struct SearchRow: View {
             search.modals[key] = $0
         })
     }
-    
-}
-
-
-struct CheckModel: Codable, Identifiable, Hashable, Equatable {
-    var id: Int
-    var type: String
-    var description: String
-    var isSelected: Bool
-}
-
-struct CheckCellView: View {
-    @Binding var cell: CheckModel
-    
-    var body: some View {
-        
-        HStack {
-            Image(systemName: cell.isSelected ? "checkmark.square" : "square")
-                .foregroundColor(.blue)
-                .onTapGesture {
-                    cell.isSelected.toggle()
-                }
-                
-            Text(cell.description)
-        }.frame(maxWidth:.infinity, alignment: .leading)
-        
-    }
-    
-    
-    
-}
-
-struct TestView: View {
-    var label: String
-    
-    @Binding var cells: [CheckModel]
-    @Binding var updated: Bool
-    
-    @State private var multiSelection = Set<Int>()
-    @Environment(\.editMode) private var editMode
-
-        
-    var body: some View {
-        VStack {
-            List($cells, selection: $multiSelection) { $cell in
-                Text(cell.description)
-            }
-            
-            .onChange(of: editMode!.wrappedValue, perform: { value in
-              if value.isEditing {
-                 // Entering edit mode (e.g. 'Edit' tapped)
-              } else {
-                 // Leaving edit mode (e.g. 'Done' tapped)
-                  
-                  //for var cell in cells {
-                      
-                     // if multiSelection.contains(cell.id){
-                      //    cell.isSelected.toggle()
-
-                     // }
-                //  }
-                  
-                 self.updated.toggle()
-              }
-            })
-            .navigationTitle(label)
-            .toolbar { EditButton() }
-        }
-        Text("\(multiSelection.count) selections")
-    }
-
-}
-
-
-struct CheckRow: View {
-    var label: String
-    
-    @Binding var cells: [CheckModel]
-    @Binding var updated: Bool
-        
-    var body: some View {
-        
-        VStack {
-            
-            List($cells, id: \.id) { $cell in
-                
-                CheckCellView(cell: $cell)
-                    .onChange(of: cell) { _ in
-                        updated.toggle()
-                    }
-            }
-            
-
-        }.navigationTitle(label)
-    }
-    
 }
 
 
 
 struct LocationRow: View {
-    
+    @EnvironmentObject var search: SearchObject
+
     @State var postcode = ""
     let range = [CheckModel(id: 0, type: "distance", description: "Nationwide", isSelected: true),
                  CheckModel(id: 10, type: "distance",description: "10 Miles", isSelected: false),
@@ -239,7 +232,8 @@ struct LocationRow: View {
 }
 
 struct MileageRow: View {
-    
+    @EnvironmentObject var search: SearchObject
+
     @State private var mileage = 400000.0
     @State private var isEditing = false
     
@@ -267,7 +261,8 @@ struct MileageRow: View {
 }
 
 struct PriceRow: View {
-    
+    @EnvironmentObject var search: SearchObject
+
     @State private var priceMax = 400000.0
     @State private var priceMin = 0.0
     
@@ -277,11 +272,8 @@ struct PriceRow: View {
     @State private var isEditing = false
     
     
-
-    
     var body: some View {
 
-        // setup slider view
         VStack {
             HStack {
                 Text("$\(Int(priceMin))")
@@ -357,9 +349,8 @@ struct PriceRow: View {
 
 
 struct YearRow: View {
-    @ObservedObject var search: SearchObject
-    
-    
+    @EnvironmentObject var search: SearchObject
+
     @State var start = 1980
     @State var end = 2022
 
@@ -418,16 +409,12 @@ struct YearRow: View {
         })
         
     }
-    
 
 }
 
 
 struct FilterView: View {
-    
-    @Binding var components: [String: String]
-    @ObservedObject var search: SearchObject
-
+    @EnvironmentObject var search: SearchObject
 
     @State private var mileage = 400000.0
     @State private var isEditing = false
@@ -440,20 +427,18 @@ struct FilterView: View {
     @State var rangeSelect = 0
     
     
-    @State var updated = false
-
-    
     var body: some View {
         
-
         VStack {
+            
+            
             List {
-                
                 Group {
-                    
                     
                     NavigationLink {
                         LocationRow()
+                            .environmentObject(search)
+
                     } label: {
                         VStack {
                             Text("Location")
@@ -461,7 +446,9 @@ struct FilterView: View {
                     }
                     
                     NavigationLink {
-                        YearRow(search: search)
+                        YearRow()
+                            .environmentObject(search)
+
                     } label: {
                         VStack {
                             Text("Year")
@@ -471,6 +458,8 @@ struct FilterView: View {
 
                     NavigationLink {
                         MileageRow()
+                            .environmentObject(search)
+
                     } label: {
                         VStack {
                             Text("Mileage")
@@ -480,6 +469,8 @@ struct FilterView: View {
                     
                     NavigationLink {
                         PriceRow()
+                            .environmentObject(search)
+
                     } label: {
                         VStack {
                             Text("Price")
@@ -490,7 +481,9 @@ struct FilterView: View {
 
         
                 NavigationLink {
-                    CheckRow(label: "Make", cells: binding(for: "make"), updated: $updated)
+                    CheckRow(label: "Make", cells: binding(for: "make"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Makes")
@@ -498,7 +491,9 @@ struct FilterView: View {
                 }
                 
                 NavigationLink {
-                    CheckRow(label: "Body", cells: binding(for: "body"), updated: $updated)
+                    CheckRow(label: "Body", cells: binding(for: "body"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Body")
@@ -506,7 +501,9 @@ struct FilterView: View {
                 }
                 
                 NavigationLink {
-                    CheckRow(label: "Color", cells: binding(for: "color"), updated: $updated)
+                    CheckRow(label: "Color", cells: binding(for: "color"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Color")
@@ -514,7 +511,9 @@ struct FilterView: View {
                 }
                 
                 NavigationLink {
-                    CheckRow(label: "Fuel", cells: binding(for: "fuel"), updated: $updated)
+                    CheckRow(label: "Fuel", cells: binding(for: "fuel"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Fuel")
@@ -523,7 +522,9 @@ struct FilterView: View {
                 
                 
                 NavigationLink {
-                    CheckRow(label: "Transmission", cells: binding(for: "transmission"), updated: $updated)
+                    CheckRow(label: "Transmission", cells: binding(for: "transmission"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Transmission")
@@ -531,7 +532,9 @@ struct FilterView: View {
                 }
                 
                 NavigationLink {
-                    CheckRow(label: "Drivetrain", cells: binding(for: "drivetrain"), updated: $updated)
+                    CheckRow(label: "Drivetrain", cells: binding(for: "drivetrain"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Drivetrain")
@@ -540,99 +543,23 @@ struct FilterView: View {
                 
                 
                 NavigationLink {
-                    CheckRow(label: "Condition", cells: binding(for: "condition"), updated: $updated)
+                    CheckRow(label: "Condition", cells: binding(for: "condition"), updated: $search.updated)
+                        .environmentObject(search)
+
                 } label: {
                     VStack {
                         Text("Condition")
                     }
                 }
-                
-                
-
-                
             }
         }
-
-        
-
         .navigationTitle("Filter")
-        .onChange(of: updated){ _ in
-            print("Updated Checklist")
-            self.processQuery()
-        }
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.white)
         .edgesIgnoringSafeArea(.all)
     }
     
-    func processQuery() -> Void {
-        
-        
-        let selectMakes = search.modals["make"]!.filter { cell in
-            return cell.isSelected
-        }.map{$0.description}.joined(separator: "/")
-        
-        let selectBodys = search.modals["body"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        let selectTransmission = search.modals["transmission"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        let selectDrivetrains = search.modals["drivetrain"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        
-        let selectFuels = search.modals["fuel"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        
-        self.components["path"] = selectMakes
 
-        
-        if !selectBodys.isEmpty {
-            //params.append(URLQueryItem(name: "bodyCode", value: selectBodys))
-            self.components["bodyCode"] = selectBodys
-        }
-        
-        if !selectTransmission.isEmpty {
-            //params.append(URLQueryItem(name: "transmissionCode", value: selectTransmission))
-            self.components["transmissionCode"] = selectTransmission
-        }
-        
-        if !selectDrivetrains.isEmpty {
-            //params.append(URLQueryItem(name: "drivetrainCode", value: selectDrivetrains))
-            self.components["drivetrainCode"] = selectDrivetrains
-        }
-                          
-        if !selectFuels.isEmpty {
-            //params.append(URLQueryItem(name: "fuelCode", value: selectFuels))
-            self.components["fuelCode"] = selectFuels
-        }
-                          
-        
-        
-        var params = [URLQueryItem]()
-
-        
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "http"
-        urlComponents.host = "localhost"
-        urlComponents.path = "/auto/search/\(selectMakes)"
-        urlComponents.queryItems = params
-        print(urlComponents.url?.absoluteString)
-
-        
-        //
-        //var urlComps = URLComponents(string: "\(encoded_url)")!
-        //urlComps.queryItems = queryItems
-        //let result = urlComps.url!
-
-        
-    }
     
     private func binding(for key: String) -> Binding<[CheckModel]> {
         return Binding(get: {
@@ -644,256 +571,6 @@ struct FilterView: View {
 }
 
 
-/**
-struct FilterView2: View {
-    
-    @Binding var components: [String: String]
-    @ObservedObject var search: SearchObject
-
-
-    @State private var mileage = 400000.0
-    @State private var isEditing = false
-    
-    @State var postcode = ""
-    let range = [CheckModel(id: 0, type: "distance", description: "Nationwide", isSelected: true),
-                 CheckModel(id: 10, type: "distance",description: "10 Miles", isSelected: false),
-                 CheckModel(id: 25, type: "distance", description: "20 Miles", isSelected: false),
-                 CheckModel(id: 50, type: "distance", description: "50 miles", isSelected: false)]
-    @State var rangeSelect = 0
-    
-    
-    @State var updated = false
-
-    
-    var body: some View {
-        
-
-        
-        List {
-            
-            Collapsible(
-                label: {
-                    Text("Location")
-                    
-                },
-                content: {
-                    HStack {
-                        VStack(spacing: 10) {
-                            
-                            TextField("Postcode", text: $postcode)
-                                .padding()
-                                .keyboardType(.decimalPad)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 5, style: .continuous)
-                                    .strokeBorder(.blue, lineWidth: 1))
-
-                            
-                            Picker("Range", selection: $rangeSelect) {
-                                ForEach(range, id: \.id) {
-                                    Text($0.description)
-                                }
-                            }
-                            .pickerStyle(.automatic)
-                            
-                        }
-
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            )
-            //.padding(.top, 100)
-
-            
-            Collapsible(
-                label: {
-                    Text("Mileage")
-                    
-                },
-                content: {
-                    VStack(spacing: 1) {
-                        
-                        HStack {
-                            Slider(
-                                value: $mileage,
-                                in: 0...400000,
-                                onEditingChanged: { editing in
-                                    isEditing = editing
-                                }
-                            )
-                            
-                        }
-
-                        
-                        Text("\(Int(mileage))")
-                            .foregroundColor(isEditing ? .red : .blue)
-                    }
-                    
-                    .frame(maxWidth: .infinity)
-                }
-            )
-            
-            
-            Collapsible(
-                label: {
-                    Text("Make")
-                    
-                },
-                content: {
-                    HStack {
-                        
-                        CheckRow(cells: binding(for: "make"), updated: $updated)
-
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            )
-
-            
-            Collapsible(
-                label: {
-                    Text("Body")
-                    
-                },
-                content: {
-                    HStack {
-                        CheckRow(cells: binding(for: "body"), updated: $updated)
-
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            )
-            
-            Collapsible(
-                label: {
-                    Text("Fuel")
-                    
-                },
-                content: {
-                    VStack {
-                        CheckRow(cells: binding(for: "fuel"), updated: $updated)
-
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            )
-            
-            
-            Collapsible(
-                label: {
-                    Text("Drivetrain")
-                    
-                },
-                content: {
-                    HStack {
-                        CheckRow(cells: binding(for: "drivetrain"), updated: $updated)
-
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            )
-            
-            Collapsible(
-                label: {
-                    Text("Transmission")
-                    
-                },
-                content: {
-                    HStack {
-                        CheckRow(cells: binding(for: "transmission"), updated: $updated)
-
-                    }
-                    .frame(maxWidth: .infinity)
-                }
-            )
-            
-        }
-        .onChange(of: updated){ _ in
-            print("Updated Checklist")
-            self.processQuery()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white)
-        .edgesIgnoringSafeArea(.all)
-    }
-    
-    func processQuery() -> Void {
-        
-        
-        let selectMakes = search.modals["make"]!.filter { cell in
-            return cell.isSelected
-        }.map{$0.description}.joined(separator: "/")
-        
-        let selectBodys = search.modals["body"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        let selectTransmission = search.modals["transmission"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        let selectDrivetrains = search.modals["drivetrain"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        
-        let selectFuels = search.modals["fuel"]!.filter { cell in
-            return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
-        
-        self.components["path"] = selectMakes
-
-        
-        if !selectBodys.isEmpty {
-            //params.append(URLQueryItem(name: "bodyCode", value: selectBodys))
-            self.components["bodyCode"] = selectBodys
-        }
-        
-        if !selectTransmission.isEmpty {
-            //params.append(URLQueryItem(name: "transmissionCode", value: selectTransmission))
-            self.components["transmissionCode"] = selectTransmission
-        }
-        
-        if !selectDrivetrains.isEmpty {
-            //params.append(URLQueryItem(name: "drivetrainCode", value: selectDrivetrains))
-            self.components["drivetrainCode"] = selectDrivetrains
-        }
-                          
-        if !selectFuels.isEmpty {
-            //params.append(URLQueryItem(name: "fuelCode", value: selectFuels))
-            self.components["fuelCode"] = selectFuels
-        }
-                          
-        
-        
-        var params = [URLQueryItem]()
-
-        
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "http"
-        urlComponents.host = "localhost"
-        urlComponents.path = "/auto/search/\(selectMakes)"
-        urlComponents.queryItems = params
-        print(urlComponents.url?.absoluteString)
-
-        
-        //
-        //var urlComps = URLComponents(string: "\(encoded_url)")!
-        //urlComps.queryItems = queryItems
-        //let result = urlComps.url!
-
-        
-    }
-    
-    private func binding(for key: String) -> Binding<[CheckModel]> {
-        return Binding(get: {
-            return search.modals[key] ?? []
-        }, set: {
-            search.modals[key] = $0
-        })
-    }
-}
-**/
 
 enum Direction {
     // enumeration definition goes here
@@ -903,23 +580,9 @@ enum Direction {
 
 
 struct SortView: View {
-    
-    @Binding var components: [String:String]
-
+    @EnvironmentObject var search: SearchObject
     
     @State private var selection: CheckModel?
-    @State var direction = Direction.ASC
-    @State var order = "price"
-    
-    var sort = [
-        CheckModel(id: 0, type: "sort", description: "Relevance", isSelected: true),
-        CheckModel(id: 1, type: "sort", description: "Price Low to High", isSelected: false),
-        CheckModel(id: 2, type: "sort", description: "Price High to Low", isSelected: false),
-        CheckModel(id: 3, type: "sort", description: "Year Low to High", isSelected: false),
-        CheckModel(id: 4, type: "sort", description: "Year High to Low", isSelected: false),
-        CheckModel(id: 5, type: "sort", description: "Mileage Low to High", isSelected: false),
-        CheckModel(id: 6, type: "sort", description: "Mileage High to Low", isSelected: false)
-    ]
 
     
     var body: some View {
@@ -928,11 +591,10 @@ struct SortView: View {
                 
                 List(selection: $selection) {
                     
-                    ForEach(self.sort, id: \.id) { option in
+                    ForEach(search.modals["sort"] ?? [], id: \.id) { option in
 
                         HStack {
-                            
-                            Image(systemName: option == self.selection ? "checkmark.circle" : "circle")
+                            Image(systemName: option.isSelected ? "checkmark.circle" : "circle")
                                     .foregroundColor(.blue)
                             
 
@@ -945,8 +607,10 @@ struct SortView: View {
                         .contentShape(Rectangle())
                         .frame(height: 50)
                         .onTapGesture {
+                            self.search.resetKey(key: "sort")
                             self.selection = option
-                            self.processSelection(option: option)
+                            self.search.toggle(key: "sort", id: option.id)
+                            self.search.updated.toggle()
                         }
                     }
                     
@@ -962,53 +626,21 @@ struct SortView: View {
     }
     
     
-    func processSelection(option: CheckModel) {
-        
-        switch option.id {
-            case 0:
-                self.order = "id"
-                self.direction = Direction.ASC
-            case 1:
-                self.order = "price"
-                self.direction = Direction.ASC
-            case 2:
-                self.order = "price"
-                self.direction = Direction.DESC
-            case 3:
-                self.order = "year"
-                self.direction = Direction.ASC
-            case 4:
-                self.order = "year"
-                self.direction = Direction.DESC
-            case 5:
-                self.order = "mileage"
-                self.direction = Direction.ASC
-            case 6:
-                self.order = "mileage"
-                self.direction = Direction.DESC
-            case 7:
-                self.order = "created";
-                self.direction = Direction.ASC;
-            default:
-                self.order = "id";
-                self.direction = Direction.ASC;
-        }
-        
-        self.components["sortBy"] = self.order
-        self.components["sortDirection"] = self.direction == Direction.ASC ? "0" : "1"
-
+    
+    private func binding(for key: String) -> Binding<[CheckModel]> {
+        return Binding(get: {
+            return search.modals[key] ?? []
+        }, set: {
+            search.modals[key] = $0
+        })
     }
 }
 
 struct ResultView: View {
     @EnvironmentObject var meta: Meta
-    
-    
-    @Binding var components: [String:String]
-    @ObservedObject var search: SearchObject
+    @EnvironmentObject var search: SearchObject
 
     @State var params = [URLQueryItem]()
-    
     @State var columns = [
         GridItem(.adaptive(minimum: 275, maximum: 400))
     ]
@@ -1033,7 +665,7 @@ struct ResultView: View {
                         .onAppear(perform: {
                             if !self.dataSource.endOfList {
                                 if self.dataSource.shouldLoadMore(item: auto) {
-                                    self.dataSource.fetch(path: meta.query, params: params)
+                                    //self.dataSource.fetch(path: "/auto/search/\(meta.query)", params: params)
 
                                 }
                             }
@@ -1051,58 +683,157 @@ struct ResultView: View {
 
         }
         
-        .onChange(of: components) { _ in
+        .onChange(of: search.updated) { _ in
             self.processQuery()
         }
         .onAppear {
-            self.processQuery()
-            //self.dataSource.fetch(path: "auto/search/\(query)")
-            
-            self.dataSource.fetch(path: meta.query, params: params)
+           // self.processQuery()
+          //self.dataSource.fetch(path: "/auto/search/\(meta.query)", params: params)
         }
         
     }
+    
+    func processSort() {
+        let selectSort = search.modals["sort"]!.filter { cell in
+            return cell.isSelected
+        }
+        
+        if selectSort.isEmpty {
+            
+            return
+        }
+        
+        var direction = Direction.ASC
+        var order = "price"
+        
+        switch selectSort[0].id {
+            case 0:
+                order = "id"
+                direction = Direction.ASC
+            case 1:
+                order = "price"
+                direction = Direction.ASC
+            case 2:
+                order = "price"
+               direction = Direction.DESC
+            case 3:
+                order = "year"
+                direction = Direction.ASC
+            case 4:
+                order = "year"
+                direction = Direction.DESC
+            case 5:
+                order = "mileage"
+                direction = Direction.ASC
+            case 6:
+                order = "mileage"
+                direction = Direction.DESC
+            case 7:
+                order = "created";
+                direction = Direction.ASC;
+            default:
+                order = "id";
+                direction = Direction.ASC;
+        }
+        
+        search.components["sortBy"] = order
+        search.components["sortDirection"] = direction == Direction.ASC ? "0" : "1"
+        
+    }
+    
+    func processFilter() -> Void {
+        
+        let selectMakes = search.modals["make"]!.filter { cell in
+            return cell.isSelected
+        }.map{$0.description}.joined(separator: "/")
+        
+        let selectBodys = search.modals["body"]!.filter { cell in
+            return cell.isSelected
+        }.map{String($0.id)}.joined(separator: "_")
+        
+        let selectTransmission = search.modals["transmission"]!.filter { cell in
+            return cell.isSelected
+        }.map{String($0.id)}.joined(separator: "_")
+        
+        let selectDrivetrains = search.modals["drivetrain"]!.filter { cell in
+            return cell.isSelected
+        }.map{String($0.id)}.joined(separator: "_")
+        
+        
+        let selectFuels = search.modals["fuel"]!.filter { cell in
+            return cell.isSelected
+        }.map{String($0.id)}.joined(separator: "_")
+        
+        
+        if !selectBodys.isEmpty {
+            //params.append(URLQueryItem(name: "bodyCode", value: selectBodys))
+            search.components["bodyCode"] = selectBodys
+        }
+        
+        if !selectTransmission.isEmpty {
+            //params.append(URLQueryItem(name: "transmissionCode", value: selectTransmission))
+            search.components["transmissionCode"] = selectTransmission
+        }
+        
+        if !selectDrivetrains.isEmpty {
+            //params.append(URLQueryItem(name: "drivetrainCode", value: selectDrivetrains))
+            search.components["drivetrainCode"] = selectDrivetrains
+        }
+                          
+        if !selectFuels.isEmpty {
+            //params.append(URLQueryItem(name: "fuelCode", value: selectFuels))
+            search.components["fuelCode"] = selectFuels
+        }
+                       
+        search.components["path"] = selectMakes
+    }
+    
     
     func processQuery() -> Void {
         
+        self.processFilter()
+        self.processSort()
+        
+        
         var params = [URLQueryItem]()
 
-        if self.components.keys.contains( "bodyCode") {
-            params.append(URLQueryItem(name: "bodyCode", value: self.components["bodyCode"]))
+        if search.components.keys.contains( "bodyCode") {
+            params.append(URLQueryItem(name: "bodyCode", value: search.components["bodyCode"]))
         }
         
-        if self.components.keys.contains( "transmissionCode") {
-            params.append(URLQueryItem(name: "transmissionCode", value: self.components["transmissionCode"]))
+        if search.components.keys.contains( "transmissionCode") {
+            params.append(URLQueryItem(name: "transmissionCode", value: search.components["transmissionCode"]))
         }
         
-        if self.components.keys.contains( "drivetrainCode") {
-            params.append(URLQueryItem(name: "drivetrainCode", value: self.components["drivetrainCode"] ))
+        if search.components.keys.contains( "drivetrainCode") {
+            params.append(URLQueryItem(name: "drivetrainCode", value: search.components["drivetrainCode"] ))
         }
                           
-        if self.components.keys.contains( "fuelCode") {
-            params.append(URLQueryItem(name: "fuelCode", value: self.components["fuelCode"]))
+        if search.components.keys.contains( "fuelCode") {
+            params.append(URLQueryItem(name: "fuelCode", value: search.components["fuelCode"]))
         }
         
-        if self.components.keys.contains( "sortBy") {
-            params.append(URLQueryItem(name: "sortBy", value: self.components["sortBy"]))
+        if search.components.keys.contains( "sortBy") {
+            params.append(URLQueryItem(name: "sortBy", value: search.components["sortBy"]))
         }
         
-        if self.components.keys.contains( "sortDirection") {
-            params.append(URLQueryItem(name: "sortDirection", value: self.components["sortDirection"]))
+        if search.components.keys.contains( "sortDirection") {
+            params.append(URLQueryItem(name: "sortDirection", value: search.components["sortDirection"]))
         }
         
-        //if self.components.keys.contains( "path") {
-       //     path = self.components["path"]!
-       // }
+        var path = meta.query
+        if search.components.keys.contains( "path") {
+            path = search.components["path"]!
+        }
              
         self.params = params
         self.dataSource.reset()
-        self.dataSource.fetch(path: meta.query, params: params)
-
-
+        self.dataSource.fetch(path: "/auto/search/\(path)", params: params)
+        
     }
     
 }
+
 
 struct SearchItem: Hashable, Identifiable {
     var id: Self {self}
@@ -1112,9 +843,10 @@ struct SearchItem: Hashable, Identifiable {
 }
 
 
-
-
 struct SearchView: View {
+    
+    @StateObject var search = SearchObject()
+
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
@@ -1136,16 +868,22 @@ struct SearchView: View {
         CheckModel(id: 4, type: "condition", description: "Third-Party Certified", isSelected: false)
     ]
     
+    @State var sort = [
+        CheckModel(id: 0, type: "sort", description: "Relevance", isSelected: true),
+        CheckModel(id: 1, type: "sort", description: "Price Low to High", isSelected: false),
+        CheckModel(id: 2, type: "sort", description: "Price High to Low", isSelected: false),
+        CheckModel(id: 3, type: "sort", description: "Year Low to High", isSelected: false),
+        CheckModel(id: 4, type: "sort", description: "Year High to Low", isSelected: false),
+        CheckModel(id: 5, type: "sort", description: "Mileage Low to High", isSelected: false),
+        CheckModel(id: 6, type: "sort", description: "Mileage High to Low", isSelected: false)
+    ]
+    
+    
     
     @State var showFilter = false
     @State var showSort = false
     @State var title = "Search"
     
-    
-    @StateObject var search = SearchObject()
-    @State var test = [SearchItem]()
-
-
     
     var body: some View {
         
@@ -1163,14 +901,14 @@ struct SearchView: View {
             
             VStack {
                 
-                SearchRow(search: search)
+                SearchRow()
                 
                 GeometryReader { geometry in
                     
                     
                     ZStack(alignment: .leading) {
                         
-                        ResultView(components: $components, search: search)
+                        ResultView()
                             .frame(width: geometry.size.width, height: geometry.size.height)
                             .offset(x: self.showFilter || self.showSort ? geometry.size.width/1.5 : 0)
                             .disabled(self.showFilter || self.showSort ? true : false)
@@ -1178,15 +916,14 @@ struct SearchView: View {
                         if self.showFilter {
                             
         
-                            FilterView(components: $components, search: search)
+                            FilterView()
                                 .frame(width: geometry.size.width)
                                 .transition(.move(edge: .leading))
                         }
                         
                         if self.showSort {
                             
-                            
-                            SortView(components: $components)
+                            SortView()
                                 .frame(width: geometry.size.width)
                                 .transition(.move(edge: .trailing))
                         }
@@ -1197,6 +934,7 @@ struct SearchView: View {
                 }
                 
             }
+            .environmentObject(search)
             .navigationBarTitle("\(self.title)", displayMode: .inline)
             .navigationBarItems(leading: (
                 
@@ -1240,13 +978,18 @@ struct SearchView: View {
         
         
         .onAppear {
-            self.buildFuel()
-            self.buildBody()
-            self.buildMakes()
-            self.buildDrivetrain()
-            self.buildTransmission()
-            self.buildConditions()
-            self.buildColors()
+            if self.makeModel.isEmpty {
+                self.buildFuel()
+                self.buildBody()
+                self.buildMakes()
+                self.buildDrivetrain()
+                self.buildTransmission()
+                self.buildConditions()
+                self.buildColors()
+                self.buildSort()
+            }
+
+            print("ON APPEAR SORT VIEW")
         }
     }
     
@@ -1348,7 +1091,6 @@ struct SearchView: View {
                     search.modals["body"] = self.bodyModel
 
                     temp.children = self.bodyModel
-                    test.append(temp)
                     
                 }
             case .failure(let error):
@@ -1380,8 +1122,6 @@ struct SearchView: View {
                     }
                 
                     temp.children = self.makeModel
-                    test.append(temp)
-                    
                     search.modals["make"] = self.makeModel
 
                     
@@ -1415,8 +1155,6 @@ struct SearchView: View {
                     }
                 
                     temp.children = self.colorModel
-                    test.append(temp)
-                    
                     search.modals["color"] = self.colorModel
 
                     
@@ -1433,6 +1171,13 @@ struct SearchView: View {
     func buildConditions() {
         
         search.modals["condition"] = self.conditions
+        
+    }
+    
+    
+    func buildSort() {
+        
+        search.modals["sort"] = self.sort
         
     }
     
