@@ -2,7 +2,6 @@
 //  FavoritesView.swift
 //  AutoDB
 //
-//  Created by Emmanuel Flores on 9/12/22.
 //
 
 import SwiftUI
