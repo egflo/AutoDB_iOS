@@ -40,8 +40,9 @@ struct FavoritesView: View {
                                     AutoView(auto: bookmark.auto!)
                                     
                                 } label: {
-                                    AutoCard(auto: bookmark.auto!, selected: true)
-                                        .frame(width: 300, height: 320, alignment: .top)
+                                    AutoCardSQL(auto: bookmark.auto!, selected: true)
+                                        .frame(width: 350, height: 320, alignment: .center)
+
 
                                     
                                     .onAppear(perform: {
@@ -139,9 +140,7 @@ extension FavoritesView {
             }
     }
     
-    func getBookmarks() {
-        
-    }
+
 }
 
 

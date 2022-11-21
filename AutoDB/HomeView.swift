@@ -29,10 +29,14 @@ struct WatchListRow: View {
                         
                         ForEach(dataSource.items, id: \.id) { bookmark in
                             
-   
-                            AutoCard(auto: bookmark.auto!, selected: true)
-                                .frame(width: 300, height: 320, alignment: .top)
-
+                            NavigationLink {
+                                AutoView(auto: bookmark.auto!)
+                                
+                            } label: {
+                                AutoCardSQL(auto: bookmark.auto!, selected: true)
+                                    .frame(width: 350, height: 320, alignment: .center)
+                                
+                            }
                             
                             .onAppear(perform: {
                                 if !self.dataSource.endOfList {
@@ -53,10 +57,7 @@ struct WatchListRow: View {
                     }
                     .padding(15)
 
-                    
-
                 }
-                
 
                 .onAppear {
                     
@@ -166,7 +167,7 @@ struct HomeView: View {
     
     @Binding var selectTab: Int
     @State var columns = [
-        GridItem(.adaptive(minimum: 200, maximum: 250))
+        GridItem(.adaptive(minimum: 150, maximum: 250))
     ]
     
     

@@ -9,15 +9,17 @@ import SwiftUI
 import ImageIO
 import SDWebImageSwiftUI
 import Alamofire
+import Collections
+import ScalingHeaderScrollView
 
 
 class SearchObject: ObservableObject {
-    @Published var modals = [String: [CheckModel]]()
+    @Published var modals : OrderedDictionary<String, [CheckModel]> = [:]
     @Published var components: [String:String]
     @Published var updated = false
     
     init(query: String = "all") {
-        self.modals = [String: [CheckModel]]()
+        self.modals = [:]
         self.updated = false
         self.components = [String:String]()
     }
@@ -35,11 +37,11 @@ class SearchObject: ObservableObject {
     }
     
     
-    func toggle(key: String, id: Int) -> Bool{
+    func toggle(key: String, id: String) -> Bool{
         
         let keyExists = self.modals[key] != nil
         if keyExists {
-            var index = self.modals[key]!.firstIndex(where: {$0.id == id})
+            var index = self.modals[key]!.firstIndex(where: {String($0.id) == String(id)})
             
             if var unwrapped = index {
                 self.modals[key]![unwrapped].isSelected.toggle()
@@ -70,11 +72,13 @@ class SearchObject: ObservableObject {
             return
         }
     }
+    
+
 }
 
 
 struct CheckModel: Codable, Identifiable, Hashable, Equatable {
-    var id: Int
+    var id: String
     var type: String
     var description: String
     var isSelected: Bool
@@ -168,7 +172,16 @@ struct SearchRow: View {
                                 .padding(.trailing,10)
                                 .padding(.top, 4)
                                 .padding(.bottom,4)
-                                .background(Capsule().strokeBorder(.blue, lineWidth: 1))
+                                .background(
+                                    ZStack {
+                                        Capsule()
+                                        .fill(.white)
+
+                                        Capsule()
+                                        .strokeBorder(.blue, lineWidth: 1)
+                                    }
+
+                                )
 
                             }
                     
@@ -200,10 +213,10 @@ struct LocationRow: View {
     @EnvironmentObject var search: SearchObject
 
     @State var postcode = ""
-    let range = [CheckModel(id: 0, type: "distance", description: "Nationwide", isSelected: true),
-                 CheckModel(id: 10, type: "distance",description: "10 Miles", isSelected: false),
-                 CheckModel(id: 25, type: "distance", description: "20 Miles", isSelected: false),
-                 CheckModel(id: 50, type: "distance", description: "50 miles", isSelected: false)]
+    let range = [CheckModel(id: String(0), type: "distance", description: "Nationwide", isSelected: true),
+                 CheckModel(id: String(10), type: "distance",description: "10 Miles", isSelected: false),
+                 CheckModel(id: String(25), type: "distance", description: "20 Miles", isSelected: false),
+                 CheckModel(id: String(50), type: "distance", description: "50 miles", isSelected: false)]
     @State var rangeSelect = 0
     
     
@@ -374,7 +387,7 @@ struct YearRow: View {
                 }
                 .pickerStyle(InlinePickerStyle())
                 .onChange(of: start) { newValue in
-                    search.modals["start_year"] = [CheckModel(id: start, type: "year", description: "\(start) min", isSelected: true)]
+                    search.modals["start_year"] = [CheckModel(id: String(start), type: "year", description: "\(start) min", isSelected: true)]
                 }
             }
             
@@ -391,7 +404,7 @@ struct YearRow: View {
                 }
                 .pickerStyle(InlinePickerStyle())
                 .onChange(of: end) { newValue in
-                    search.modals["end_year"] = [CheckModel(id: start, type: "year", description: "\(end) max", isSelected: true)]
+                    search.modals["end_year"] = [CheckModel(id: String(start), type: "year", description: "\(end) max", isSelected: true)]
                 }
             }
         
@@ -399,11 +412,11 @@ struct YearRow: View {
         }
         .onAppear(perform: {
             if search.modals["start_year"] != nil {
-                start = search.modals["start_year"]![0].id
+                //start = search.modals["start_year"]![0].id
             }
             
             if search.modals["end_year"] != nil {
-                start = search.modals["end_year"]![0].id
+                //start = search.modals["end_year"]![0].id
             }
             
         })
@@ -413,6 +426,30 @@ struct YearRow: View {
 }
 
 
+
+struct ContainerView<Content: View>: View {
+    var text: String
+    @ViewBuilder var content: Content
+    @State var isPresented = false
+   
+    var body: some View {
+
+          Button(action: { isPresented = true }) {
+                        Text("\(text)")
+                    }
+           .popover(isPresented: $isPresented) {
+               
+               VStack{
+                   Button(action: { isPresented = false}, label: {Text("Close").padding()})
+                   
+                   content
+               }
+                        
+        }
+
+    }
+}
+
 struct FilterView: View {
     @EnvironmentObject var search: SearchObject
 
@@ -420,12 +457,15 @@ struct FilterView: View {
     @State private var isEditing = false
     
     @State var postcode = ""
-    let range = [CheckModel(id: 0, type: "distance", description: "Nationwide", isSelected: true),
-                 CheckModel(id: 10, type: "distance",description: "10 Miles", isSelected: false),
-                 CheckModel(id: 25, type: "distance", description: "20 Miles", isSelected: false),
-                 CheckModel(id: 50, type: "distance", description: "50 miles", isSelected: false)]
+    let range = [CheckModel(id: String(0), type: "distance", description: "Nationwide", isSelected: true),
+                 CheckModel(id: String(10), type: "distance",description: "10 Miles", isSelected: false),
+                 CheckModel(id: String(25), type: "distance", description: "20 Miles", isSelected: false),
+                 CheckModel(id: String(50), type: "distance", description: "50 miles", isSelected: false)]
     @State var rangeSelect = 0
     
+    
+    @State private var showingPopover = false
+
     
     var body: some View {
         
@@ -435,128 +475,67 @@ struct FilterView: View {
             List {
                 Group {
                     
-                    NavigationLink {
-                        LocationRow()
-                            .environmentObject(search)
-
-                    } label: {
-                        VStack {
-                            Text("Location")
+                    ContainerView(
+                        text: "Location",
+                        content: {
+                            LocationRow()
+                                .environmentObject(search)
                         }
-                    }
+                    )
                     
-                    NavigationLink {
-                        YearRow()
-                            .environmentObject(search)
-
-                    } label: {
-                        VStack {
-                            Text("Year")
+                    ContainerView(
+                        text: "Year",
+                        content: {
+                            YearRow()
+                                .environmentObject(search)
                         }
-                    }
-                    
-
-                    NavigationLink {
-                        MileageRow()
-                            .environmentObject(search)
-
-                    } label: {
-                        VStack {
-                            Text("Mileage")
-                        }
-                    }
+                    )
                     
                     
-                    NavigationLink {
-                        PriceRow()
-                            .environmentObject(search)
-
-                    } label: {
-                        VStack {
-                            Text("Price")
+                    ContainerView(
+                        text: "Mileage",
+                        content: {
+                            MileageRow()
+                                .environmentObject(search)
                         }
-                    }
+                    )
+                    
+                    ContainerView(
+                        text: "Price",
+                        content: {
+                            PriceRow()
+                                .environmentObject(search)
+                        }
+                    )
                     
                 }
-
+                
+                Group {
+                    let keys = search.modals.map{$0.key}
+                    let values = search.modals.map {$0.value}
+                    
+                    ForEach(search.modals.keys, id:\.self) {key in
+                        
+                        ContainerView(
+                            text: "\(key.capitalized)",
+                            content: {
+                                CheckRow(label: key, cells: binding(for: key), updated: $search.updated)
+                                    .environmentObject(search)
+                            }
+                        )
+                        
+    
+                    }
+                    
+                    
+                }
         
-                NavigationLink {
-                    CheckRow(label: "Make", cells: binding(for: "make"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Makes")
-                    }
-                }
-                
-                NavigationLink {
-                    CheckRow(label: "Body", cells: binding(for: "body"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Body")
-                    }
-                }
-                
-                NavigationLink {
-                    CheckRow(label: "Color", cells: binding(for: "color"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Color")
-                    }
-                }
-                
-                NavigationLink {
-                    CheckRow(label: "Fuel", cells: binding(for: "fuel"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Fuel")
-                    }
-                }
-                
-                
-                NavigationLink {
-                    CheckRow(label: "Transmission", cells: binding(for: "transmission"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Transmission")
-                    }
-                }
-                
-                NavigationLink {
-                    CheckRow(label: "Drivetrain", cells: binding(for: "drivetrain"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Drivetrain")
-                    }
-                }
-                
-                
-                NavigationLink {
-                    CheckRow(label: "Condition", cells: binding(for: "condition"), updated: $search.updated)
-                        .environmentObject(search)
-
-                } label: {
-                    VStack {
-                        Text("Condition")
-                    }
-                }
             }
         }
         .navigationTitle("Filter")
-        .frame(maxWidth: .infinity, alignment: .leading)
+        //.frame(maxWidth: .infinity, alignment: .leading)
         .background(.white)
-        .edgesIgnoringSafeArea(.all)
+        //.edgesIgnoringSafeArea(.all)
     }
     
 
@@ -591,7 +570,7 @@ struct SortView: View {
                 
                 List(selection: $selection) {
                     
-                    ForEach(search.modals["sort"] ?? [], id: \.id) { option in
+                    ForEach(search.modals["sort"]!, id: \.id) { option in
 
                         HStack {
                             Image(systemName: option.isSelected ? "checkmark.circle" : "circle")
@@ -607,8 +586,9 @@ struct SortView: View {
                         .contentShape(Rectangle())
                         .frame(height: 50)
                         .onTapGesture {
-                            self.search.resetKey(key: "sort")
+                            //self.search.resetKey(key: "sort")
                             self.selection = option
+                            self.search.resetKey(key: "sort")
                             self.search.toggle(key: "sort", id: option.id)
                             self.search.updated.toggle()
                         }
@@ -618,11 +598,11 @@ struct SortView: View {
                 .background(.white)
                 
 
-            Spacer()
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .navigationTitle("Sort")
+        //.frame(maxWidth: .infinity, alignment: .leading)
         .background(.white)
-        .edgesIgnoringSafeArea(.all)
+        //.edgesIgnoringSafeArea(.all)
     }
     
     
@@ -645,23 +625,48 @@ struct ResultView: View {
         GridItem(.adaptive(minimum: 275, maximum: 400))
     ]
     
-    @StateObject private var dataSource = ContentDataSource<Auto>()
+    @State private var selectedCar: AutoSQL?
+    
+    @StateObject private var dataSource = ContentDataSource<AutoSQL>()
 
     var body: some View {
         
         ScrollView {
             
             LazyVGrid(columns: columns, spacing: 20) {
+                
                 ForEach(dataSource.items, id: \.id) { auto in
-                    
-                    NavigationLink {
-                        AutoView(auto: auto)
-                        
-                    } label: {
-                        AutoCard(auto: auto)
-                            .frame(width: 300, height: 320, alignment: .top)
+                    /**
+                     
+                     
+                     NavigationLink {
+                         AutoView(id: auto.id)
+                         
+                     } label: {
+                         AutoCardSQL(auto: auto)
+                             .frame(width: 350, height: 320, alignment: .center)
+                         
 
+                         .onAppear(perform: {
+                             if !self.dataSource.endOfList {
+                                 if self.dataSource.shouldLoadMore(item: auto) {
+                                     //self.dataSource.fetch(path: "/auto/search/\(meta.query)", params: params)
+
+                                 }
+                             }
+                         })
+                     }
+                     
+                     */
+                    
+           
+                        AutoCardSQL(auto: auto)
+                            .frame(width: 350, height: 320, alignment: .center)
+                            .onTapGesture(perform: {
+                                self.selectedCar = auto
+                            })
                         
+
                         .onAppear(perform: {
                             if !self.dataSource.endOfList {
                                 if self.dataSource.shouldLoadMore(item: auto) {
@@ -670,7 +675,7 @@ struct ResultView: View {
                                 }
                             }
                         })
-                    }
+                    
                     
                 }
                 
@@ -679,7 +684,11 @@ struct ResultView: View {
                 }
 
             }
-            .padding(.top, 25)
+            .sheet(item: $selectedCar) {auto in
+                
+                AutoView(auto: auto)
+                
+            }
 
         }
         
@@ -688,7 +697,7 @@ struct ResultView: View {
         }
         .onAppear {
            // self.processQuery()
-          //self.dataSource.fetch(path: "/auto/search/\(meta.query)", params: params)
+          self.dataSource.fetch(path: "/auto/search/\(meta.query)", params: params)
         }
         
     }
@@ -707,28 +716,28 @@ struct ResultView: View {
         var order = "price"
         
         switch selectSort[0].id {
-            case 0:
+            case String(0):
                 order = "id"
                 direction = Direction.ASC
-            case 1:
+            case String(1):
                 order = "price"
                 direction = Direction.ASC
-            case 2:
+            case String(2):
                 order = "price"
                direction = Direction.DESC
-            case 3:
+            case String(3):
                 order = "year"
                 direction = Direction.ASC
-            case 4:
+            case String(4):
                 order = "year"
                 direction = Direction.DESC
-            case 5:
+            case String(5):
                 order = "mileage"
                 direction = Direction.ASC
-            case 6:
+            case String(6):
                 order = "mileage"
                 direction = Direction.DESC
-            case 7:
+            case String(7):
                 order = "created";
                 direction = Direction.ASC;
             default:
@@ -749,20 +758,19 @@ struct ResultView: View {
         
         let selectBodys = search.modals["body"]!.filter { cell in
             return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
+        }.map{$0.description}.joined(separator: "_")
         
         let selectTransmission = search.modals["transmission"]!.filter { cell in
             return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
+        }.map{$0.description}.joined(separator: "_")
         
         let selectDrivetrains = search.modals["drivetrain"]!.filter { cell in
             return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
-        
+        }.map{$0.description}.joined(separator: "_")
         
         let selectFuels = search.modals["fuel"]!.filter { cell in
             return cell.isSelected
-        }.map{String($0.id)}.joined(separator: "_")
+        }.map{$0.description}.joined(separator: "_")
         
         
         if !selectBodys.isEmpty {
@@ -844,46 +852,20 @@ struct SearchItem: Hashable, Identifiable {
 
 
 struct SearchView: View {
-    
-    @StateObject var search = SearchObject()
+    @EnvironmentObject var meta: Meta
 
+
+    @StateObject var search = SearchObject()
     
     let width = UIScreen.main.bounds.width
     let height = UIScreen.main.bounds.height
-        
-    @State var components = [String: String]()
-    @State var modal = [String: [CheckModel]]()
-    
-    @State var makeModel = [CheckModel]()
-    @State var bodyModel = [CheckModel]()
-    @State var fuelModel = [CheckModel]()
-    @State var colorModel = [CheckModel]()
-    @State var driveModel = [CheckModel]()
-    @State var transmissionModel = [CheckModel]()
-    @State var conditionModel = [CheckModel]()
-    @State var conditions = [
-        CheckModel(id: 1, type: "condition", description: "New", isSelected: false),
-        CheckModel(id: 2, type: "condition", description: "Used", isSelected: false),
-        CheckModel(id: 3, type: "condition", description: "Manufacturer Certified", isSelected: false),
-        CheckModel(id: 4, type: "condition", description: "Third-Party Certified", isSelected: false)
-    ]
-    
-    @State var sort = [
-        CheckModel(id: 0, type: "sort", description: "Relevance", isSelected: true),
-        CheckModel(id: 1, type: "sort", description: "Price Low to High", isSelected: false),
-        CheckModel(id: 2, type: "sort", description: "Price High to Low", isSelected: false),
-        CheckModel(id: 3, type: "sort", description: "Year Low to High", isSelected: false),
-        CheckModel(id: 4, type: "sort", description: "Year High to Low", isSelected: false),
-        CheckModel(id: 5, type: "sort", description: "Mileage Low to High", isSelected: false),
-        CheckModel(id: 6, type: "sort", description: "Mileage High to Low", isSelected: false)
-    ]
-    
-    
+
     
     @State var showFilter = false
     @State var showSort = false
     @State var title = "Search"
     
+
     
     var body: some View {
         
@@ -898,42 +880,55 @@ struct SearchView: View {
                 }
             }
         
-            
-            VStack {
+
+    
+            GeometryReader { geometry in
                 
-                SearchRow()
-                
-                GeometryReader { geometry in
-                    
-                    
-                    ZStack(alignment: .leading) {
-                        
-                        ResultView()
-                            .frame(width: geometry.size.width, height: geometry.size.height)
-                            .offset(x: self.showFilter || self.showSort ? geometry.size.width/1.5 : 0)
-                            .disabled(self.showFilter || self.showSort ? true : false)
-                        
-                        if self.showFilter {
-                            
-        
-                            FilterView()
-                                .frame(width: geometry.size.width)
-                                .transition(.move(edge: .leading))
-                        }
-                        
-                        if self.showSort {
-                            
-                            SortView()
-                                .frame(width: geometry.size.width)
-                                .transition(.move(edge: .trailing))
-                        }
+                ZStack(alignment: .center) {
+              
+                    ResultView()
+                    //.offset(x: self.showFilter || self.showSort ? geometry.size.width/1.5 : 0)
+                    .disabled(self.showFilter || self.showSort ? true : false)
+                    //frame(width: geometry.size.width, height: geometry.size.height)
 
 
-                    }
-                    .gesture(drag)
                 }
+                .gesture(drag)
+                .overlay(
+                    ZStack {
+                        Rectangle()
+                            .fill(.gray.opacity(0.15))
+                        SearchRow()
+                    }
+                    .frame(height: 60), alignment: .bottom
+                )
                 
-            }
+                ZStack(alignment: .top) {
+                    
+                    
+                    if self.showFilter {
+                        
+
+                        FilterView()
+                            .frame(width: geometry.size.width)
+                            .transition(.move(edge: .leading))
+                    }
+                    
+                    if self.showSort {
+                        
+                        SortView()
+                            .frame(width: geometry.size.width)
+                            .transition(.move(edge: .trailing))
+                    }
+                    
+                }
+                            
+
+
+        }
+
+
+    
             .environmentObject(search)
             .navigationBarTitle("\(self.title)", displayMode: .inline)
             .navigationBarItems(leading: (
@@ -973,98 +968,56 @@ struct SearchView: View {
                         
                     }
 
-
             )
         
         
         .onAppear {
-            if self.makeModel.isEmpty {
-                self.buildFuel()
-                self.buildBody()
-                self.buildMakes()
-                self.buildDrivetrain()
-                self.buildTransmission()
-                self.buildConditions()
-                self.buildColors()
-                self.buildSort()
-            }
+            self.buildMetaTypes()
 
-            print("ON APPEAR SORT VIEW")
         }
     }
     
     
-    
-    func buildTransmission() {
-        let URL = "http://10.81.1.123:8080/auto/transmission/all"
-        NetworkManager.shared.getRequest(of: [Transmission].self, url: URL) { (result) in
+    func buildMetaTypes() {
+        let URL = "/meta/types/all"
+        NetworkManager.shared.getRequest(of: [String:[MetaType]].self, url: URL) { (result) in
             switch result {
             case .success(let values):
                 DispatchQueue.main.async {
-                    for value in values {
-                        let data = CheckModel(id: value.id, type:"transmission", description: value.description, isSelected: false)
-                        self.transmissionModel.append(data)
+                    
+                    var someDict: OrderedDictionary<String, [CheckModel]> = [:]
+                    
+                    for (_, keyValue) in values.enumerated() {
+                                        
+                        var check_model = [CheckModel]()
                         
-                    }
-                    
-                    search.modals["transmission"] = self.transmissionModel
-                    
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("Error")
-                    
-                }
-            }
-        }
-    }
-    
-    
-    
-    func buildDrivetrain() {
-        let URL = "http://10.81.1.123:8080/auto/drivetrain/all"
-        NetworkManager.shared.getRequest(of: [Drivetrain].self, url: URL) { (result) in
-            switch result {
-            case .success(let values):
-                DispatchQueue.main.async {
-                    for value in values {
-                        let data = CheckModel(id: value.id, type:"drivetrain", description: value.name, isSelected: false)
-                        self.driveModel.append(data)
-                    }
-                    
-                    search.modals["drivetrain"] = self.driveModel
-
-                    
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("Error")
-                    
-                }
-            }
-        }
-    }
-    
-    
-    func buildFuel() {
-        let URL = "http://10.81.1.123:8080/auto/fuel/all"
-        NetworkManager.shared.getRequest(of: [Fuel].self, url: URL) { (result) in
-            switch result {
-            case .success(let values):
-                DispatchQueue.main.async {
-                    for value in values {
-                        let data = CheckModel(id: value.id, type: "fuel", description: value.type, isSelected: false)
-                        self.fuelModel.append(data)
+                        for value in keyValue.value {
+                         
+                            if !value.name.isEmpty {
+                                let data = CheckModel(id: value.id, type: value.type, description: value.name, isSelected: false)
+                                check_model.append(data)
+                            }
+                        }
         
+                        someDict[keyValue.key] = check_model
                     }
                     
-                    search.modals["fuel"] = fuelModel
-
+                    someDict["sort"] = [
+                        CheckModel(id: String(0), type: "sort", description: "Relevance", isSelected: true),
+                        CheckModel(id: String(1), type: "sort", description: "Price Low to High", isSelected: false),
+                        CheckModel(id: String(2), type: "sort", description: "Price High to Low", isSelected: false),
+                        CheckModel(id: String(3), type: "sort", description: "Year Low to High", isSelected: false),
+                        CheckModel(id: String(4), type: "sort", description: "Year High to Low", isSelected: false),
+                        CheckModel(id: String(5), type: "sort", description: "Mileage Low to High", isSelected: false),
+                        CheckModel(id: String(6), type: "sort", description: "Mileage High to Low", isSelected: false)
+                    ]
+                                        
+                    search.modals = someDict
                     
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
-                    print("Error")
+                    meta.toast = Toast(type: .error, headline: "Error", subtitle: error.localizedDescription)
                     
                 }
             }
@@ -1072,113 +1025,8 @@ struct SearchView: View {
     }
 
     
-    func buildBody() {
-        let URL = "http://10.81.1.123:8080/body/type/all"
-        NetworkManager.shared.getRequest(of: [BodyType].self, url: URL) { (result) in
-            switch result {
-            case .success(let values):
-                DispatchQueue.main.async {
-                    var temp = SearchItem(name: "Body")
-
-                    
-                    for value in values {
-                        let data = CheckModel(id: value.id,  type: "body", description: value.type, isSelected: false)
-                        self.bodyModel.append(data)
-                        
-
-                    }
-                    
-                    search.modals["body"] = self.bodyModel
-
-                    temp.children = self.bodyModel
-                    
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("Error")
-                    
-                }
-            }
-        }
-    }
-
-    
-    func buildMakes() {
-        let URL = "http://10.81.1.123:8080/make/all"
-        NetworkManager.shared.getRequest(of: [Make].self, url: URL) { (result) in
-            switch result {
-            case .success(let values):
-                DispatchQueue.main.async {
-                    
-                    var temp = SearchItem(name: "Make")
-                    
-                    
-                
-                    
-                    for value in values {
-                        let data = CheckModel(id: value.id, type: "make", description: value.name, isSelected: false)
-                        self.makeModel.append(data)
-
-                    }
-                
-                    temp.children = self.makeModel
-                    search.modals["make"] = self.makeModel
-
-                    
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("Error")
-                    
-                }
-            }
-        }
-    }
-
-    
-    func buildColors() {
-        let URL = "http://10.81.1.123:8080/auto/color/all"
-        NetworkManager.shared.getRequest(of: [Make].self, url: URL) { (result) in
-            switch result {
-            case .success(let values):
-                DispatchQueue.main.async {
-                    
-                    var temp = SearchItem(name: "Make")
-                    
-                    
-                
-                    
-                    for value in values {
-                        let data = CheckModel(id: value.id, type: "color", description: value.name, isSelected: false)
-                        self.colorModel.append(data)
-
-                    }
-                
-                    temp.children = self.colorModel
-                    search.modals["color"] = self.colorModel
-
-                    
-                }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    print("Error")
-                    
-                }
-            }
-        }
-    }
-    
-    func buildConditions() {
-        
-        search.modals["condition"] = self.conditions
-        
-    }
-    
-    
-    func buildSort() {
-        
-        search.modals["sort"] = self.sort
-        
-    }
     
 }
+
+
+

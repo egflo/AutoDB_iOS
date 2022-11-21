@@ -11,7 +11,7 @@ import SDWebImageSwiftUI
 
 struct DealerRow: View {
     
-    @State var dealer: Dealer?
+    @State var dealer: DealerSQL?
     
     var body: some View {
         
@@ -103,8 +103,8 @@ struct FeatureView: View {
                 
                 Spacer()
             }
-            .frame(width: 170, height: 70, alignment: .leading)
-            //.border(.red)
+            .frame(maxWidth: .infinity, maxHeight: 70, alignment: .leading)
+            //.frame(width: 170, height: 70, alignment: .leading)
             
         }
     }
@@ -120,140 +120,56 @@ struct FeatureView: View {
 }
 
 
-struct AutoView: View {
-    let width = UIScreen.main.bounds.width
-    let height = UIScreen.main.bounds.height
+
+struct CollapseView: View {
     
-    
-    @State var auto: Auto
-    
-    
-    @State var columns = [
-        GridItem(.adaptive(minimum: 200, maximum: 270))
-    ]
-    
+    @State var auto: AutoSQL
     @State var columnsText = [
         GridItem(.adaptive(minimum: 100, maximum: 200))
     ]
     
+    
     var body: some View {
         
-        ScrollView {
-            if let auto = auto {
-                
-                
-                Group {
-                    
-                    ZStack {
-                        ImageSlider(auto: auto)
-                            .border(.green)
-                        
-                        
-                        VStack {
-                            
-                            
-                            Button {
-                                print("Bookmared")
-                            } label: {
-                                Image(systemName: "heart")
-                                    .frame(width: 50, height: 50)
-                                    .background(
-                                        Circle()
-                                            .fill(.white)
-                                            .frame(width: 40, height: 40)
-                                            .shadow(color: .black, radius: 1)
-                                    )
-                            }
-
-                            
-                            Spacer()
-                        }
-                        .frame(width: width, height: 290, alignment: .leading)
-                        
-                    } .frame(width: width, height: 290, alignment: .center)
-
-
-                    
-                    Text("\(String(auto.year)) \(auto.make.name) \(auto.model.name)")
-                        .bold()
-                        .font(.largeTitle)
-                    
-                    Text(formatPrice(price: auto.price))
-                        .bold()
-                        .font(.headline)
-                    
-                    DealerRow(dealer: auto.dealer)
-
-                }
-                
-                
-                Group {
-                    
-                    LazyVGrid(columns: columns, spacing: 20)  {
-                        
-
-                        FeatureView(name: "mileage", description: "Mileage", value: String(auto.mileage))
-
-                        FeatureView(name: "engine", description: "Engine", value: String(auto.engine.type))
-
-                        FeatureView(name: "drivetrain", description: "Drivetrain", value: String(auto.drivetrain.name))
-
-                        FeatureView(name: "transmission", description: "Transmission", value: String(auto.transmission.description))
-
-                        FeatureView(name: "fuel", description: "Fuel", value: String(auto.fuel.type))
-
-                        FeatureView(name: "mpg", description: "MPG", value: "\(String(auto.cityMpg)) Combine")
-
-
-                        FeatureView(name: "exterior", description: "Exterior", value: "\(String(auto.exteriorColor))")
-
-                        FeatureView(name: "seats", description: "Seating", value: "\(String(auto.seating)) Seat(s)")
-
-
+        VStack {
             
-                    }
-                    .padding(.leading, 10)
-                    .padding(.trailing,10)
+                Group {
                     
-
                     
-                }
-                
-                VStack {
-
-                Collapsible(
-                    label: {
-                        Text("Seller Description")
-                        
-                    },
-                    content: {
-                        HStack {
-                            Text("\(auto.description)")
-                            Spacer()
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                )
-                .frame(maxWidth: .infinity)
-                                
-                Collapsible(
-                    label: {
-                        Text("Features")
-                        
-                    },
-                    content: {
-                        VStack {
-                            ForEach(auto.options, id: \.id) { option in
-                                Text(option.description)
+                    Collapsible(
+                        label: {
+                            Text("Seller Description")
+                            
+                        },
+                        content: {
+                            HStack {
+                                Text("\(auto.description)")
+                                Spacer()
                             }
+                            .frame(maxWidth: .infinity)
+                            .padding()
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                    }
-                )
-                .frame(maxWidth: .infinity)
-                
+                    )
+                    .frame(maxWidth: .infinity)
+                                    
+                    Collapsible(
+                        label: {
+                            Text("Features")
+                            
+                        },
+                        content: {
+                            VStack {
+                                ForEach(auto.options, id: \.self) { option in
+                                    Text(option)
+                                }
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                        }
+                    )
+                    .frame(maxWidth: .infinity)
+        
+
                 
                 Collapsible(
                     label: {
@@ -300,7 +216,7 @@ struct AutoView: View {
                                      .bold()
                                      .frame(maxWidth: .infinity, alignment: .leading)
 
-                                Text(auto.engine.power)
+                                 Text(auto.engine.power)
                                      .frame(maxWidth: .infinity, alignment: .leading)
 
                              }
@@ -324,8 +240,10 @@ struct AutoView: View {
                 )
                 .frame(maxWidth: .infinity)
                 
-                
-                
+        
+        
+        
+ 
                 if let dealer = auto.dealer {
                     
                     Collapsible(
@@ -397,9 +315,10 @@ struct AutoView: View {
                     )
                     .frame(maxWidth: .infinity)
                 }
-                
-                
-                Collapsible(
+
+        
+        
+                 Collapsible(
                     label: {
                         Text("Report")
                         
@@ -413,7 +332,7 @@ struct AutoView: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
                                 
-                                Text("\(auto.report.vin)")
+                                Text("\(auto.vin)")
                                     .frame(maxWidth: .infinity, alignment: .leading)
 
                             }
@@ -446,7 +365,7 @@ struct AutoView: View {
                                      .frame(maxWidth: .infinity, alignment: .leading)
 
 
-                                 Text(formatBool(bool: auto.report.theftTitle))
+                                 Text(auto.report.theftTitle)
                                      .frame(maxWidth: .infinity, alignment: .leading)
 
                              }
@@ -469,10 +388,108 @@ struct AutoView: View {
                     }
                 )
                 .frame(maxWidth: .infinity)
+                
+            }
+
+            
+        }
+        .padding(.leading, 10)
+        .padding(.trailing, 10)
+        
+    }
+    
+    func formatBool(bool: Bool) -> String {
+        
+        if bool {
+            return "Yes"
+        }
+        
+        return "No"
+        
+    }
+    
+}
+
+struct AutoView: View {
+    let width = UIScreen.main.bounds.width
+    let height = UIScreen.main.bounds.height
+    
+    
+    //var id: String
+    
+    @State var auto: AutoSQL?
+    
+    
+    @State var columns = [
+        GridItem(.adaptive(minimum: 250, maximum: 290))
+    ]
+    
+
+    var body: some View {
+        
+        ScrollView {
+            if let auto = auto {
+                
+                Group {
+                    
+                    ZStack {
+                        ImageSliderSQL(auto: auto)
+                        
+                        BookmarkIcon(auto: auto)
+                        .offset(x: -150, y: -95)
+                        
+                        
+                    } .frame(width: width, height: 290, alignment: .center)
+
+
+                    
+                    Text("\(String(auto.year)) \(auto.make) \(auto.model)")
+                        .bold()
+                        .font(.largeTitle)
+                    
+                    Text(formatPrice(price: auto.price))
+                        .bold()
+                        .font(.headline)
+                    
+                    DealerRow(dealer: auto.dealer)
+
+                }
+                
+                
+                Group {
+                    
+                    LazyVGrid(columns: columns, spacing: 20)  {
+                        
+
+                        FeatureView(name: "mileage", description: "Mileage", value: String(auto.mileage))
+
+                        FeatureView(name: "engine", description: "Engine", value: String(auto.engine.engineType))
+
+                        FeatureView(name: "drivetrain", description: "Drivetrain", value: String(auto.drivetrain.wheelSystemDisplay))
+
+                        FeatureView(name: "transmission", description: "Transmission", value: String(auto.transmission.transmissionDisplay))
+
+                        FeatureView(name: "fuel", description: "Fuel", value: String(auto.fuelType))
+
+                        FeatureView(name: "mpg", description: "MPG", value: "\(20) Combined")
+
+                        FeatureView(name: "exterior", description: "Exterior", value: "\(String(auto.exteriorColor))")
+
+                        FeatureView(name: "seats", description: "Seating", value: "\(auto.maximumSeating)")
+
+
+            
+                    }
+                    .padding(.leading, 10)
+                    .padding(.trailing,10)
+                    
+                    
+                    CollapseView(auto: auto)
+
                     
                 }
-                .padding(.leading, 10)
-                .padding(.trailing, 10)
+                
+
                 
             }
             else {
@@ -484,7 +501,7 @@ struct AutoView: View {
 
         
         .onAppear(perform: {
-            self.getAuto()
+            //self.getAuto()
         })
     }
     
@@ -498,28 +515,20 @@ struct AutoView: View {
         return value!
     }
     
-    func formatBool(bool: Bool) -> String {
-        
-        if bool {
-            return "Yes"
-        }
-        
-        return "No"
-        
-    }
+
     
     func getAuto() {
-        let URL = "http://10.81.1.123:8080/auto/make/bmw"
-        NetworkManager.shared.getRequest(of: Auto.self, url: URL) { (result) in
+        let URL = "/auto/\(1252)"
+        
+        NetworkManager.shared.getRequest(of: AutoSQL.self, url: URL) { (result) in
             switch result {
             case .success(let auto):
                 DispatchQueue.main.async {
-                    //self.auto = auto
-                    print(auto)
+                    self.auto = auto
                 }
             case .failure(let error):
                 DispatchQueue.main.async {
-                    print("Error")
+                    print("Error \(error.localizedDescription)")
                     
                 }
             }

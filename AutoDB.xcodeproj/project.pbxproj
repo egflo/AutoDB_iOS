@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B5438538292B2BC700184721 /* ScalingHeaderScrollView in Frameworks */ = {isa = PBXBuildFile; productRef = B5438537292B2BC700184721 /* ScalingHeaderScrollView */; };
+		B547CD4D292580BA008E6697 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B547CD4C292580BA008E6697 /* Extensions.swift */; };
 		B55355AB28D64FB2005AA9D2 /* Collapsible.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55355AA28D64FB2005AA9D2 /* Collapsible.swift */; };
 		B55355AD28D64FF9005AA9D2 /* ImageSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B55355AC28D64FF9005AA9D2 /* ImageSlider.swift */; };
 		B5578C7B28D0D0F70085FC9B /* AutoDBApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5578C7A28D0D0F70085FC9B /* AutoDBApp.swift */; };
@@ -31,6 +33,12 @@
 		B5578CC428D141C50085FC9B /* AutoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5578CC328D141C50085FC9B /* AutoView.swift */; };
 		B5578CC628D141DE0085FC9B /* AutoCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5578CC528D141DE0085FC9B /* AutoCard.swift */; };
 		B5578CC928D144F00085FC9B /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = B5578CC828D144F00085FC9B /* SDWebImageSwiftUI */; };
+		B55BC2032924AE0B0012A6C6 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = B55BC2022924AE0B0012A6C6 /* Collections */; };
+		B55BC2052924AE0B0012A6C6 /* DequeModule in Frameworks */ = {isa = PBXBuildFile; productRef = B55BC2042924AE0B0012A6C6 /* DequeModule */; };
+		B55BC2072924AE0B0012A6C6 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = B55BC2062924AE0B0012A6C6 /* OrderedCollections */; };
+		B5E8EE352927176900B13841 /* Bookmark.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E8EE342927176900B13841 /* Bookmark.swift */; };
+		B5E8EE382928671100B13841 /* AlertToast in Frameworks */ = {isa = PBXBuildFile; productRef = B5E8EE372928671100B13841 /* AlertToast */; };
+		B5E8EE3C2928A0ED00B13841 /* Toast.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5E8EE3B2928A0ED00B13841 /* Toast.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +59,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B547CD4C292580BA008E6697 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		B55355AA28D64FB2005AA9D2 /* Collapsible.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collapsible.swift; sourceTree = "<group>"; };
 		B55355AC28D64FF9005AA9D2 /* ImageSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSlider.swift; sourceTree = "<group>"; };
 		B5578C7728D0D0F70085FC9B /* AutoDB.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AutoDB.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -78,6 +87,8 @@
 		B5578CC128D1419E0085FC9B /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		B5578CC328D141C50085FC9B /* AutoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoView.swift; sourceTree = "<group>"; };
 		B5578CC528D141DE0085FC9B /* AutoCard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoCard.swift; sourceTree = "<group>"; };
+		B5E8EE342927176900B13841 /* Bookmark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bookmark.swift; sourceTree = "<group>"; };
+		B5E8EE3B2928A0ED00B13841 /* Toast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toast.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,7 +97,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5578CC928D144F00085FC9B /* SDWebImageSwiftUI in Frameworks */,
+				B5E8EE382928671100B13841 /* AlertToast in Frameworks */,
 				B5578CAE28D0D1970085FC9B /* Alamofire in Frameworks */,
+				B5438538292B2BC700184721 /* ScalingHeaderScrollView in Frameworks */,
+				B55BC2072924AE0B0012A6C6 /* OrderedCollections in Frameworks */,
+				B55BC2052924AE0B0012A6C6 /* DequeModule in Frameworks */,
+				B55BC2032924AE0B0012A6C6 /* Collections in Frameworks */,
 				B5578CB128D0D1C00085FC9B /* Auth0 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,6 +165,8 @@
 				B5578CAA28D0D1350085FC9B /* Decode.swift */,
 				B5578CB228D0D1EC0085FC9B /* UserView.swift */,
 				B5578CB728D0D4DE0085FC9B /* Auth0.plist */,
+				B547CD4C292580BA008E6697 /* Extensions.swift */,
+				B5E8EE3B2928A0ED00B13841 /* Toast.swift */,
 			);
 			path = AutoDB;
 			sourceTree = "<group>";
@@ -185,6 +203,7 @@
 				B5578CB528D0D2490085FC9B /* CustomButton.swift */,
 				B55355AA28D64FB2005AA9D2 /* Collapsible.swift */,
 				B55355AC28D64FF9005AA9D2 /* ImageSlider.swift */,
+				B5E8EE342927176900B13841 /* Bookmark.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -209,6 +228,11 @@
 				B5578CAD28D0D1970085FC9B /* Alamofire */,
 				B5578CB028D0D1C00085FC9B /* Auth0 */,
 				B5578CC828D144F00085FC9B /* SDWebImageSwiftUI */,
+				B55BC2022924AE0B0012A6C6 /* Collections */,
+				B55BC2042924AE0B0012A6C6 /* DequeModule */,
+				B55BC2062924AE0B0012A6C6 /* OrderedCollections */,
+				B5E8EE372928671100B13841 /* AlertToast */,
+				B5438537292B2BC700184721 /* ScalingHeaderScrollView */,
 			);
 			productName = AutoDB;
 			productReference = B5578C7728D0D0F70085FC9B /* AutoDB.app */;
@@ -286,6 +310,9 @@
 				B5578CAC28D0D1970085FC9B /* XCRemoteSwiftPackageReference "Alamofire" */,
 				B5578CAF28D0D1C00085FC9B /* XCRemoteSwiftPackageReference "Auth0" */,
 				B5578CC728D144F00085FC9B /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				B55BC2012924AE0B0012A6C6 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				B5E8EE362928671100B13841 /* XCRemoteSwiftPackageReference "AlertToast" */,
+				B5438536292B2BC700184721 /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */,
 			);
 			productRefGroup = B5578C7828D0D0F70085FC9B /* Products */;
 			projectDirPath = "";
@@ -335,12 +362,15 @@
 				B5578CC028D141920085FC9B /* NetworkManager.swift in Sources */,
 				B5578CB328D0D1EC0085FC9B /* UserView.swift in Sources */,
 				B5578C7B28D0D0F70085FC9B /* AutoDBApp.swift in Sources */,
+				B5E8EE352927176900B13841 /* Bookmark.swift in Sources */,
 				B5578CC228D1419E0085FC9B /* HomeView.swift in Sources */,
+				B5E8EE3C2928A0ED00B13841 /* Toast.swift in Sources */,
 				B55355AB28D64FB2005AA9D2 /* Collapsible.swift in Sources */,
 				B5578C7D28D0D0F70085FC9B /* Persistence.swift in Sources */,
 				B5578CBC28D140D70085FC9B /* FavoritesView.swift in Sources */,
 				B5578CB628D0D2490085FC9B /* CustomButton.swift in Sources */,
 				B5578CC428D141C50085FC9B /* AutoView.swift in Sources */,
+				B547CD4D292580BA008E6697 /* Extensions.swift in Sources */,
 				B55355AD28D64FF9005AA9D2 /* ImageSlider.swift in Sources */,
 				B5578C8228D0D0F70085FC9B /* ContentView.swift in Sources */,
 				B5578C8028D0D0F70085FC9B /* AutoDB.xcdatamodeld in Sources */,
@@ -504,13 +534,16 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AutoDB/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -544,13 +577,16 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AutoDB/Info.plist;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIStatusBarStyle = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -702,6 +738,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		B5438536292B2BC700184721 /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/exyte/ScalingHeaderScrollView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.6;
+			};
+		};
 		B5578CAC28D0D1970085FC9B /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
@@ -726,9 +770,30 @@
 				minimumVersion = 2.0.0;
 			};
 		};
+		B55BC2012924AE0B0012A6C6 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-collections.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+		B5E8EE362928671100B13841 /* XCRemoteSwiftPackageReference "AlertToast" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/elai950/AlertToast";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		B5438537292B2BC700184721 /* ScalingHeaderScrollView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5438536292B2BC700184721 /* XCRemoteSwiftPackageReference "ScalingHeaderScrollView" */;
+			productName = ScalingHeaderScrollView;
+		};
 		B5578CAD28D0D1970085FC9B /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = B5578CAC28D0D1970085FC9B /* XCRemoteSwiftPackageReference "Alamofire" */;
@@ -743,6 +808,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B5578CC728D144F00085FC9B /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		B55BC2022924AE0B0012A6C6 /* Collections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B55BC2012924AE0B0012A6C6 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = Collections;
+		};
+		B55BC2042924AE0B0012A6C6 /* DequeModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B55BC2012924AE0B0012A6C6 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = DequeModule;
+		};
+		B55BC2062924AE0B0012A6C6 /* OrderedCollections */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B55BC2012924AE0B0012A6C6 /* XCRemoteSwiftPackageReference "swift-collections" */;
+			productName = OrderedCollections;
+		};
+		B5E8EE372928671100B13841 /* AlertToast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B5E8EE362928671100B13841 /* XCRemoteSwiftPackageReference "AlertToast" */;
+			productName = AlertToast;
 		};
 /* End XCSwiftPackageProductDependency section */
 

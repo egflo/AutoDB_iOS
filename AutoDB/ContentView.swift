@@ -2,7 +2,6 @@
 //  ContentView.swift
 //  AutoDB
 //
-//  Created by Emmanuel Flores on 9/13/22.
 //
 
 import SwiftUI
@@ -17,58 +16,89 @@ struct ContentView: View {
         sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
         animation: .default)
     
+
     private var items: FetchedResults<Item>
 
-    var body: some View {
-        
-
-        TabView(selection: $selectedTab) {
+    init() {
+        if #available(iOS 15, *) {
+            let appear = UIToolbarAppearance()
+            appear.configureWithDefaultBackground()
+            appear.shadowImage = UIImage()
+            appear.backgroundImage =
+            UIImage()
+                .sd_blurredImage(withRadius: 20)
+                
+            UIToolbar.appearance().standardAppearance = appear
+            UIToolbar.appearance().compactAppearance = appear
+            UIToolbar.appearance().scrollEdgeAppearance = appear
+            UIToolbar.appearance().isTranslucent = true
             
-            VStack{
-                NavigationView {
-                    HomeView(selectTab: $selectedTab)
-
-                }
-            }
-            .tabItem {
-                 Label("Home", systemImage: "house")
-             }
-            .tag(1)
-            
-            VStack{
-                NavigationView {
-                    SearchView()
-
-                }
-            }
-            .tabItem {
-                 Label("Search", systemImage: "magnifyingglass")
-             }
-            .tag(2)
-
-            
-            VStack{
-                NavigationView {
-                    FavoritesView(selectTab: $selectedTab)
-                }
-            }
-            .tabItem {
-                 Label("Favorites", systemImage: "heart")
-             }
-            .tag(3)
-            
-            VStack{
-                NavigationView {
-                    UserView(selectTab: $selectedTab)
-                }
-            }
-            .tabItem {
-                 Label("Account", systemImage: "person.crop.circle")
-             }
-            .tag(4)
+            let tb = UIToolbar()
+            tb.isTranslucent = true
+            tb.sizeToFit()
 
         }
+    }
+    
+    
+    
+    var body: some View {
+        
+        VStack {
+            VStack {
+                
+                TabView(selection: $selectedTab) {
+                    
+                    VStack{
+                        NavigationView {
+                            HomeView(selectTab: $selectedTab)
+                            
+                        }
+                    }
+                    .tabItem {
+                        Label("Home", systemImage: "house")
+                    }
+                    .tag(1)
+                    
+                    VStack{
+                        NavigationView {
+                            SearchView()
+                            
+                        }
+                    }
+                    .tabItem {
+                        Label("Search", systemImage: "magnifyingglass")
+                    }
+                    .tag(2)
+                    
+                    
+                    VStack{
+                        NavigationView {
+                            FavoritesView(selectTab: $selectedTab)
+                        }
+                    }
+                    .tabItem {
+                        Label("Favorites", systemImage: "heart")
+                    }
+                    .tag(3)
+                    
+                    VStack{
+                        NavigationView {
+                            UserView(selectTab: $selectedTab)
+                        }
+                    }
+                    .tabItem {
+                        Label("Account", systemImage: "person.crop.circle")
+                    }
+                    .tag(4)
+                    
+                }
+            }
+        }
+
+
         .environmentObject(meta)
+        .toastView(toast: $meta.toast)
 
     }
 

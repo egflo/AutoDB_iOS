@@ -75,9 +75,7 @@ struct UserView: View {
                                 ProfileCell(key: "Email", value: user.email)
                                 ProfileCell(key: "Email verified?", value: user.emailVerified)
                                 ProfileCell(key: "Updated at", value: user.updatedAt)
-                            }
-                            //.backgroundStyle(.gray)
-                            
+                            }                            
     
                                 
                             Button("Logout") {

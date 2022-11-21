@@ -131,3 +131,75 @@ struct ImageSlider: View {
 
 
 
+struct ImageSliderSQL: View {
+    // 1
+    @State var auto: AutoSQL
+    @State var pageIndex = 0
+
+    @State var images = [String]()
+    
+    var body: some View {
+        // 2
+        VStack {
+            if images.isEmpty || images.count < 2 {
+                Image("fallback")
+                    .resizable() // Resizable like SwiftUI.Image, you must use this modifier or the view will use the image bitmap size
+                    .scaledToFit()
+            }
+            
+            else {
+                
+                ZStack(alignment: .center) {
+                    
+                    TabView(selection: $pageIndex) {
+                        ForEach(Array(images.enumerated()), id: \.element) { index, element in
+                            
+                            VStack {
+                                //3
+                               WebImage(url: URL(string: element))
+                               // Supports options and context, like `.delayPlaceholder` to show placeholder only when error
+                               .onSuccess { image, data, cacheType in
+                                   // Success
+                                   // Note: Data exist only when queried from disk cache or network. Use `.queryMemoryData` if you really need data
+                               }
+                               .resizable() // Resizable like SwiftUI.Image, you must use this modifier or the view will use the image bitmap size
+                               .placeholder(Image(systemName: "livephoto.slash")) // Placeholder Image
+                               // Supports ViewBuilder as well
+                               .placeholder {
+                                   Rectangle().foregroundColor(.white)
+                               }
+                               .indicator(.activity) // Activity Indicator
+                               .transition(.fade(duration: 0.5)) // Fade Transition with duration
+                               .scaledToFit()
+                                
+                            }
+                            .tag(index)
+
+                        }
+                    }
+                    .tabViewStyle(PageTabViewStyle())
+                    
+
+                }.frame(maxWidth:.infinity, maxHeight: .infinity)
+
+    
+            }
+        }
+        .onAppear(perform: {
+            images = auto.images.sorted{$0 < $1}
+        })
+    }
+    
+    func processImages(auto: Auto) -> [AutoImage] {
+    
+        if auto.images.count < 2 {
+            
+            return []
+        }
+        
+        else {
+            return auto.images.sorted{$0.url < $1.url}
+        }
+        
+    }
+}
